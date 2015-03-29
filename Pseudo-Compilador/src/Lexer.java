@@ -19,10 +19,10 @@ public class Lexer {
 		String cadena = readFile(args[0]);
 		System.out.println(cadena);
 		
-		// Imprimir tokens por nombe y tipo -----------------------------------------------------
+		// Imprimir tokens por nombre y tipo -----------------------------------------------------
 		List<Token> tokens = tokenize(cadena);
 		for(int i = 0; i < tokens.size(); i++) {
-            System.out.println("Token: "+tokens.get(i).getText()+ ", Tipo: "+tokens.get(i).getToken());
+            System.out.println(i+"	Token: "+tokens.get(i).getText()+ "		Tipo: "+tokens.get(i).getToken());
         }
 
 	}
@@ -71,13 +71,19 @@ public class Lexer {
         TokenizeState state = TokenizeState.DEFAULT;
         
         // Many tokens are a single character, like operators.
-        String charTokens = "\n=+-*/%<>#";
-        TokenType[] tokenTypes = { TokenType.LINE, TokenType.EQUALS,
+        String charTokens = "=+-*/%<>#";
+        TokenType[] tokenTypes = {TokenType.EQUALS,
             TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR,
             TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR,
             TokenType.OPERATOR, TokenType.OPERATOR
         };
-
+        // Arreglo de palabras reserverdas del pseudocodigo
+        String[] stringTokens = {"INICIO-DE-PROGRAMA", "FIN-DE-PROGRAMA",
+        		"LEER", "ESCRIBIR", "ENTONCES", "MIENTRAS", 
+        		"INICIO", "FIN"};
+        TokenType[] stringTokenTypes = {TokenType.INICIOPROG, TokenType.FINPROG,
+        		TokenType.LEER, TokenType.ESCRIBIR, TokenType.ENTONCES, TokenType.MIENTRAS,
+        		TokenType.INICIO, TokenType.FIN};
         // Scan through the code one character at a time, building up the list
         // of tokens.
         for (int i = 0; i < source.length(); i++) {
@@ -100,30 +106,52 @@ public class Lexer {
                 break;
                 
             case WORD:
-                if (Character.isLetterOrDigit(c)) {
+                if (Character.isLetterOrDigit(c) || c=='-') {
                     token += c;
+                } else{
+                	//Comparar con stringTokens
+                	boolean found=false;
+                	for(int j = 0; j < stringTokens.length; j++){
+                		if (token.toUpperCase().equals(stringTokens[j])){
+                			tokens.add(new Token(token, stringTokenTypes[j]));
+                			found=true;
+                			break;
+                		}
+                	}
+                	if(!found)
+                		tokens.add(new Token(token, TokenType.IDENTIFICADOR));
+                    token = "";
+                    state = TokenizeState.DEFAULT;
+                    i--; // Reprocess this character in the default state.
+                }
+
+                break;
+                
+            case NUMBER:     	
+                if(Character.isDigit(c)){
+                	token += c;
+                }
+                else if (c=='.') {
+                    token += c;
+                    state = TokenizeState.FLOAT;
                 } else {
-                    tokens.add(new Token(token, TokenType.WORD));
+                    //tokens.add(new Token(token, TokenType.NUMBER));
+                	System.out.println("ERROR: No se aceptan Enteros!, en: "+ token);
                     token = "";
                     state = TokenizeState.DEFAULT;
                     i--; // Reprocess this character in the default state.
                 }
                 break;
-                
-            case NUMBER:
-                // HACK: Negative numbers and floating points aren't supported.
-                // To get a negative number, just do 0 - <your number>.
-                // To get a floating point, divide.
-                if (Character.isDigit(c)) {
+            case FLOAT:
+            	if (Character.isDigit(c)) {
                     token += c;
                 } else {
-                    tokens.add(new Token(token, TokenType.NUMBER));
+                    tokens.add(new Token(token, TokenType.FLOAT));
                     token = "";
                     state = TokenizeState.DEFAULT;
                     i--; // Reprocess this character in the default state.
                 }
-                break;
-                
+            	break;
             case STRING:
                 if (c == '"') {
                     tokens.add(new Token(token, TokenType.STRING));
@@ -159,8 +187,9 @@ public class Lexer {
      * at the names, but Jasic is a little more crude.
      */
     private enum TokenType {
-        WORD, NUMBER, STRING, LINE,
-        EQUALS, OPERATOR, EOF, OP_RELACIONAL,
+        WORD, NUMBER, FLOAT, STRING, LINE,
+        EQUALS, OPERATOR, EOF, 
+        INICIOPROG, FINPROG, OP_RELACIONAL,
         IDENTIFICADOR, LEER, ESCRIBIR, SI,
         ENTONCES, MIENTRAS, INICIO, FIN
     }
@@ -199,7 +228,7 @@ public class Lexer {
      * identify how deeply nested you are). The parser is able to handle that.
      */
     private enum TokenizeState {
-        DEFAULT, WORD, NUMBER, STRING, COMMENT
+        DEFAULT, WORD, NUMBER, FLOAT, STRING, COMMENT
     }
 
 }

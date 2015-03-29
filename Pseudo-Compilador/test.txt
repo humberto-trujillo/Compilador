@@ -1,12 +1,15 @@
+@ comentario
 Inicio-de-programa
 	Leer N
-	Prom = 0
-	I = 0
+	@ solo acepta floatantes
+	Prom = 0.0
+	@ enteros no son aceptados ej. Prom = 0
+	I = 0.0
 	Mientras I < N
 		Inicio
 			Leer Calificacion
 			Prom = Prom + Calificacion
-			I = I + 1
+			I = I + 1.0
 		Fin
 	Prom = Prom / N
 	Escribir Prom
