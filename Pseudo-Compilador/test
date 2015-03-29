@@ -1,0 +1,13 @@
+Inicio-de-programa
+	Leer N
+	Prom = 0
+	I = 0
+	Mientras I < N
+		Inicio
+			Leer Calificacion
+			Prom = Prom + Calificacion
+			I = I + 1
+		Fin
+	Prom = Prom / N
+	Escribir Prom
+Fin-de-programa
