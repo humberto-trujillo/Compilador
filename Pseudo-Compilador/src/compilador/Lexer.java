@@ -1,3 +1,4 @@
+package compilador;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,24 +11,24 @@ import java.util.List;
 
 public class Lexer {
 
-	public static void main(String[] args) {
-		 if (args.length != 1) {
-	            System.out.println("No hay archivo que leer...");
-	            return;
-	    }
-		// Leer Script de Pseudocodigo ----------------------------------------------------- 
-		String cadena = readFile(args[0]);
-		System.out.println(cadena);
-		
-		// Imprimir tokens por nombre y tipo -----------------------------------------------------
-		List<Token> tokens = tokenize(cadena);
-		for(int i = 0; i < tokens.size(); i++) {
-            System.out.println(i+"	Token: "+tokens.get(i).getText()+ "		Tipo: "+tokens.get(i).getToken());
-        }
-
-	}
+//	public static void main(String[] args) {
+//		 if (args.length != 1) {
+//	            System.out.println("No hay archivo que leer...");
+//	            return;
+//	    }
+//		// Leer Script de Pseudocodigo ----------------------------------------------------- 
+//		String cadena = readFile(args[0]);
+//		System.out.println(cadena);
+//		
+//		// Imprimir tokens por nombre y tipo -----------------------------------------------------
+//		List<Token> tokens = tokenize(cadena);
+//		for(int i = 0; i < tokens.size(); i++) {
+//            System.out.println(i+"	Token: "+tokens.get(i).getText()+ "		Tipo: "+tokens.get(i).getToken());
+//        }
+//
+//	}
 	// Metodo para leer script de pseudocodigo -----------------------------------------------------
-	private static String readFile(String path) {
+	public static String readFile(String path) {
         try {
             FileInputStream stream = new FileInputStream(path);
             
@@ -64,7 +65,7 @@ public class Lexer {
      * a sequence of tokens. Each token is a meaningful unit of program, like a
      * variable name, a number, a string, or an operator.
      */
-    private static List<Token> tokenize(String source) {
+    public static List<Token> tokenize(String source) {
         List<Token> tokens = new ArrayList<Token>();
         
         String token = "";
@@ -220,7 +221,7 @@ public class Lexer {
      * This is a single meaningful chunk of code. It is created by the tokenizer
      * and consumed by the parser.
      */
-    private static class Token {
+    public static class Token {
 
         public Token(String text, TokenType type) {
             this.text = text;
