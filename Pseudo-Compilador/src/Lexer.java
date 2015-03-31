@@ -71,18 +71,18 @@ public class Lexer {
         TokenizeState state = TokenizeState.DEFAULT;
         
         // Many tokens are a single character, like operators.
-        String charTokens = "=+-*/%<>#";
-        TokenType[] tokenTypes = {TokenType.EQUALS,
+        String charTokens = "+-*/%#=<>";
+        TokenType[] tokenTypes = {
             TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR,
             TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR,
-            TokenType.OPERATOR, TokenType.OPERATOR
+            TokenType.EQUALS,   TokenType.OPERATOR, TokenType.OPERATOR
         };
         // Arreglo de palabras reserverdas del pseudocodigo
         String[] stringTokens = {"INICIO-DE-PROGRAMA", "FIN-DE-PROGRAMA",
-        		"LEER", "ESCRIBIR", "ENTONCES", "MIENTRAS", 
+        		"LEER", "ESCRIBIR", "SI", "ENTONCES", "MIENTRAS", 
         		"INICIO", "FIN"};
         TokenType[] stringTokenTypes = {TokenType.INICIOPROG, TokenType.FINPROG,
-        		TokenType.LEER, TokenType.ESCRIBIR, TokenType.ENTONCES, TokenType.MIENTRAS,
+        		TokenType.LEER, TokenType.ESCRIBIR, TokenType.SI, TokenType.ENTONCES, TokenType.MIENTRAS,
         		TokenType.INICIO, TokenType.FIN};
         // Scan through the code one character at a time, building up the list
         // of tokens.
@@ -91,7 +91,13 @@ public class Lexer {
             switch (state) {
             case DEFAULT:
                 if (charTokens.indexOf(c) != -1) {
-                    tokens.add(new Token(Character.toString(c), tokenTypes[charTokens.indexOf(c)]));
+                	if(charTokens.indexOf(c) > 5){
+                		token += c;
+                		state = TokenizeState.OP_RELACIONAL;
+                	}
+                	else{
+                        tokens.add(new Token(Character.toString(c), tokenTypes[charTokens.indexOf(c)]));
+                	}
                 } else if (Character.isLetter(c)) {
                     token += c;
                     state = TokenizeState.WORD;
@@ -105,6 +111,22 @@ public class Lexer {
                 }
                 break;
                 
+            case OP_RELACIONAL:
+            	if(c == '='){
+            		token += c;
+            		tokens.add(new Token(token,TokenType.OP_RELACIONAL));           		
+            	}else{
+            		if(token.equals("=")){
+            			tokens.add(new Token(token,TokenType.EQUALS));           			
+            		}else{
+            			tokens.add(new Token(token,TokenType.OP_RELACIONAL));
+            		}
+            	}
+            	token = "";
+        		state = TokenizeState.DEFAULT;
+                //i--; // Reprocess this character in the default state.
+            	break;
+            	
             case WORD:
                 if (Character.isLetterOrDigit(c) || c=='-') {
                     token += c;
@@ -228,7 +250,7 @@ public class Lexer {
      * identify how deeply nested you are). The parser is able to handle that.
      */
     private enum TokenizeState {
-        DEFAULT, WORD, NUMBER, FLOAT, STRING, COMMENT
+        DEFAULT, WORD, NUMBER, FLOAT, STRING, OP_RELACIONAL, COMMENT
     }
 
 }
