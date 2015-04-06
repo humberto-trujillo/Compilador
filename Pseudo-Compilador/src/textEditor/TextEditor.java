@@ -142,7 +142,7 @@ public class TextEditor {
 		            writer.close();
 		        }
 		        catch (IOException ioe) {
-		            editPane.setText("Pardon. Can't write file. Please contact with: pkrawczak@gmail.com");
+		            editPane.setText("No se pudo escribir el texto");
 		        }
 		    }
 			}
