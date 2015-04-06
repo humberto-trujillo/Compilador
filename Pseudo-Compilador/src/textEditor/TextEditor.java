@@ -48,7 +48,7 @@ public class TextEditor {
 	private JScrollPane jScrollPane1;
 	private JEditorPane editPane;
 	private JScrollPane jScrollPane2;
-	private File fileName = new File("noname");
+	private File fileName = new File("noname.txt");
 	private JTextArea textArea;
 	/**
 	 * Launch the application.
@@ -227,7 +227,17 @@ public class TextEditor {
 		            //System.out.println(i+"	Token: "+tokens.get(i).getText()+ "		Tipo: "+tokens.get(i).getToken());
 					textArea.append(i+"	Token: "+tokens.get(i).getText()+ 
 							"		Tipo: "+tokens.get(i).getToken() + "\n");
+					
 		        }
+				BufferedWriter writer;
+			    try {
+			        writer = new BufferedWriter(new FileWriter(new File("tokens.txt")));
+			        writer.write(textArea.getText());
+			        writer.close();
+			    }
+			    catch (IOException ioe) {
+			        editPane.setText("No se puede guardar el archivo!");
+			    }
 			}
 		});
 		tokenizeButton.setBounds(6, 11, 105, 29);
