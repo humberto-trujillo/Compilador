@@ -51,6 +51,7 @@ public class Parser implements TokenInfo {
 					return false;
 				}
 			}
+			pos++;
 			return true;
 		}
 		pos = aux;
