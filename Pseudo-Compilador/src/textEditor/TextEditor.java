@@ -30,6 +30,7 @@ import java.util.List;
 
 import compilador.Lexer;
 import compilador.Lexer.Token;
+import compilador.Mensajes;
 import compilador.Parser;
 
 import javax.swing.JTextArea;
@@ -229,6 +230,7 @@ public class TextEditor {
 		tokenizeButton = new JButton("Parse!");
 		tokenizeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				Boolean b;
 				List<Token> tokens = Lexer.tokenize(editPane.getText() + "\n");
 				for(int i = 0; i < tokens.size(); i++) {
 		            //System.out.println(i+"	Token: "+tokens.get(i).getText()+ "		Tipo: "+tokens.get(i).getToken());
@@ -237,7 +239,13 @@ public class TextEditor {
 					
 		        }
 				Parser parser = new Parser(tokens);
-				System.out.println("Veredicto final: " + parser.programa().toString());
+				b =  parser.programa();
+				System.out.println("Veredicto final: " + b.toString());
+				if(b)
+					Mensajes.despliegaMensaje("Enhorabuena!", "No se encontraron errores de sintaxis!");
+				else
+					Mensajes.despliegaError("Hubo errores de sintaxis!");
+				
 				BufferedWriter writer;
 			    try {
 			        writer = new BufferedWriter(new FileWriter(new File("tokens.txt")));

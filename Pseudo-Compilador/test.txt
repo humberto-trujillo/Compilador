@@ -15,6 +15,6 @@ Inicio-de-programa
 	Escribir Prom
 	
 	@ para probar Operador relacional
-	Si Prom >= N
+	Si Prom >= N Entonces
 		Escribir "Aprobado"
 Fin-de-programa

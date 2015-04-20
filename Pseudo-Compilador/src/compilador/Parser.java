@@ -35,7 +35,6 @@ public class Parser implements TokenInfo {
 					pos = aux;
 					return false;
 				}
-				System.out.println(pos);
 		}
 		return true;
 	}
@@ -43,10 +42,8 @@ public class Parser implements TokenInfo {
 	private boolean bloque() {
 		aux = pos;
 		if(getType(pos++).equals(TokenType.INICIO)) {
-			print("Entramos a Inicio " + pos);
 			while(!getType(pos).equals(TokenType.FIN)) {
 				if(!sentencia()) {
-					print("sentencia en bloque no valida");
 					pos = aux;
 					return false;
 				}
@@ -98,8 +95,8 @@ public class Parser implements TokenInfo {
 					return true;
 			}
 		}
-		System.out.println("Asignacion: " + aux);
-		print("No fue asignacion");
+//		System.out.println("Asignacion: " + aux);
+//		print("No fue asignacion");
 		pos = aux;
 		return false;
 	}
@@ -111,21 +108,21 @@ public class Parser implements TokenInfo {
 				return true;
 			}
 		}
-		System.out.println("Leer: " + aux);
-		print("No fue lectura");
+//		System.out.println("Leer: " + aux);
+//		print("No fue lectura");
 		pos = aux;
 		return false;
 	}
 	
 	private boolean escribir() {
 		aux = pos;
-		System.out.println("Escribir: " + pos);
+//		System.out.println("Escribir: " + pos);
 		if(getType(pos++).equals(TokenType.ESCRIBIR)) {
 			if(getType(pos).equals(TokenType.IDENTIFICADOR) || getType(pos).equals(TokenType.STRING))
 				pos++;
 				return true;
 		}
-		print("No fue escritura");
+//		print("No fue escritura");
 		pos = aux;
 		return false;
 	}
@@ -137,7 +134,6 @@ public class Parser implements TokenInfo {
 				if(bloque() || sentencia())
 				return true;
 		}
-		print("No fue un mientras");
 		pos = aux;
 		return false;
 	}
@@ -146,13 +142,13 @@ public class Parser implements TokenInfo {
 		aux = pos;
 		if(getType(pos++).equals(TokenType.SI)) {
 			if(condicion())
-				if(bloque() || sentencia()) {
-					System.out.println("Si fue un si: " + pos);
-					return true;
-				}
+				if(getType(pos++).equals(TokenType.ENTONCES))
+					if(bloque() || sentencia()) {
+						return true;
+					}
 		}
-		System.out.println("Si: " + aux);
-		print("No fue un Si");
+//		System.out.println("Si: " + aux);
+//		print("No fue un Si");
 		pos = aux;
 		return false;
 	}
@@ -163,7 +159,7 @@ public class Parser implements TokenInfo {
 			if(getType(pos++).equals(TokenType.OP_RELACIONAL))
 				if(getType(pos++).equals(TokenType.IDENTIFICADOR))
 					return true;
-		print("La condicion esta mal");
+//		print("La condicion esta mal");
 		pos = aux;		
 		return false;
 	}
@@ -177,13 +173,13 @@ public class Parser implements TokenInfo {
 		return false;
 	}
 	
-	private boolean finDePrograma() {
-		if(getType(pos).equals(TokenType.FINPROG)) {
-			return true;
-		}
-		Mensajes.despliegaError(errorType + "Fin de programa");
-		return false;
-	}
+//	private boolean finDePrograma() {
+//		if(getType(pos).equals(TokenType.FINPROG)) {
+//			return true;
+//		}
+//		Mensajes.despliegaError(errorType + "Fin de programa");
+//		return false;
+//	}
 	
 	private TokenType getType(int i) {
 		try{
