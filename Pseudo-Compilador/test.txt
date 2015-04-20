@@ -1,7 +1,7 @@
 @ comentario
 Inicio-de-programa
 	Leer N
-	@ solo acepta floatantes
+	@ solo acepta flotantes
 	Prom = 0.0
 	@ enteros no son aceptados ej. Prom = 0
 	I = 0.0
@@ -15,6 +15,6 @@ Inicio-de-programa
 	Escribir Prom
 	
 	@ para probar Operador relacional
-	Si Prom >= 60.0 entonces
+	Si Prom >= 60.0
 		Escribir "Aprobado"
 Fin-de-programa

@@ -3,9 +3,12 @@ package textEditor;
  * Editor de texto para el compilador de pseudocodigo
  * */
 import java.awt.EventQueue;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
 import java.awt.BorderLayout;
+
 import javax.swing.JFileChooser;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -14,6 +17,7 @@ import javax.swing.JSeparator;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
@@ -23,8 +27,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+
 import compilador.Lexer;
 import compilador.Lexer.Token;
+import compilador.Parser;
+
 import javax.swing.JTextArea;
 
 public class TextEditor {
@@ -80,7 +87,7 @@ public class TextEditor {
 		frmEditorDePseudocdigo = new JFrame();
 		frmEditorDePseudocdigo.setTitle("Editor de Pseudoc\u00F3digo");
 		frmEditorDePseudocdigo.setResizable(false);
-		frmEditorDePseudocdigo.setBounds(100, 100, 572, 620);
+		frmEditorDePseudocdigo.setBounds(400, 100, 572, 620);
 		frmEditorDePseudocdigo.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		jMenuBar1 = new JMenuBar();
@@ -219,16 +226,18 @@ public class TextEditor {
 		frmEditorDePseudocdigo.getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 		
-		tokenizeButton = new JButton("Tokenize!");
+		tokenizeButton = new JButton("Parse!");
 		tokenizeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				List<Token> tokens = Lexer.tokenize(editPane.getText());
+				List<Token> tokens = Lexer.tokenize(editPane.getText() + "\n");
 				for(int i = 0; i < tokens.size(); i++) {
 		            //System.out.println(i+"	Token: "+tokens.get(i).getText()+ "		Tipo: "+tokens.get(i).getToken());
 					textArea.append(i+"	Token: "+tokens.get(i).getText()+ 
 							"		Tipo: "+tokens.get(i).getToken() + "\n");
 					
 		        }
+				Parser parser = new Parser(tokens);
+				System.out.println("Veredicto final: " + parser.programa().toString());
 				BufferedWriter writer;
 			    try {
 			        writer = new BufferedWriter(new FileWriter(new File("tokens.txt")));

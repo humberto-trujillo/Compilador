@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Lexer {
+public class Lexer implements TokenInfo{
 
 //	public static void main(String[] args) {
 //		 if (args.length != 1) {
@@ -44,9 +44,7 @@ public class Lexer {
                     builder.append(buffer, 0, read);
                 }
                 
-                // HACK: The parser expects every statement to end in a newline,
-                // even the very last one, so we'll just tack one on here in
-                // case the file doesn't have one.
+              
                 builder.append("\n");
                 
                 return builder.toString();
@@ -60,18 +58,14 @@ public class Lexer {
 
 // Tokenizing (lexing) -----------------------------------------------------
     
-    /**
-     * This function takes a script as a string of characters and chunks it into
-     * a sequence of tokens. Each token is a meaningful unit of program, like a
-     * variable name, a number, a string, or an operator.
-     */
+  
     public static List<Token> tokenize(String source) {
         List<Token> tokens = new ArrayList<Token>();
         
         String token = "";
         TokenizeState state = TokenizeState.DEFAULT;
         
-        // Many tokens are a single character, like operators.
+       
         String charTokens = "+-*/%#=<>";
         TokenType[] tokenTypes = {
             TokenType.OPERATOR, TokenType.OPERATOR, TokenType.OPERATOR,
@@ -80,8 +74,9 @@ public class Lexer {
         };
         // Arreglo de palabras reserverdas del pseudocodigo
         String[] stringTokens = {"INICIO-DE-PROGRAMA", "FIN-DE-PROGRAMA",
-        		"LEER", "ESCRIBIR", "SI", "ENTONCES", "MIENTRAS", 
-        		"INICIO", "FIN"};
+                "LEER", "ESCRIBIR", "SI", "ENTONCES", "MIENTRAS", 
+                "INICIO", "FIN"};
+    
         TokenType[] stringTokenTypes = {TokenType.INICIOPROG, TokenType.FINPROG,
         		TokenType.LEER, TokenType.ESCRIBIR, TokenType.SI, TokenType.ENTONCES, TokenType.MIENTRAS,
         		TokenType.INICIO, TokenType.FIN};
@@ -192,35 +187,22 @@ public class Lexer {
                 break;
             }
         }       
-        // HACK: Silently ignore any in-progress token when we run out of
-        // characters. This means that, for example, if a script has a string
-        // that's missing the closing ", it will just ditch it.
+     
         return tokens;
     }
 	
 	// Token data --------------------------------------------------------------
 
-    /**
-     * This defines the different kinds of tokens or meaningful chunks of code
-     * that the parser knows how to consume. These let us distinguish, for
-     * example, between a string "foo" and a variable named "foo".
-     * 
-     * HACK: A typical tokenizer would actually have unique token types for
-     * each keyword (print, goto, etc.) so that the parser doesn't have to look
-     * at the names, but Jasic is a little more crude.
-     */
-    private enum TokenType {
-        WORD, NUMBER, FLOAT, STRING, LINE,
-        EQUALS, OPERATOR, EOF, 
-        INICIOPROG, FINPROG, OP_RELACIONAL,
-        IDENTIFICADOR, LEER, ESCRIBIR, SI,
-        ENTONCES, MIENTRAS, INICIO, FIN
-    }
+   
+    // public static enum TokenType {
+    //     WORD, NUMBER, FLOAT, STRING, LINE,
+    //     EQUALS, OPERATOR, EOF, 
+    //     INICIOPROG, FINPROG, OP_RELACIONAL,
+    //     IDENTIFICADOR, LEER, ESCRIBIR, SI,
+    //     ENTONCES, MIENTRAS, INICIO, FIN
+    // }
     
-    /**
-     * This is a single meaningful chunk of code. It is created by the tokenizer
-     * and consumed by the parser.
-     */
+    
     public static class Token {
 
         public Token(String text, TokenType type) {
@@ -239,19 +221,9 @@ public class Lexer {
 
     }
     
-    /**
-     * This defines the different states the tokenizer can be in while it's
-     * scanning through the source code. Tokenizers are state machines, which
-     * means the only data they need to store is where they are in the source
-     * code and this one "state" or mode value.
-     * 
-     * One of the main differences between tokenizing and parsing is this
-     * regularity. Because the tokenizer stores only this one state value, it
-     * can't handle nesting (which would require also storing a number to
-     * identify how deeply nested you are). The parser is able to handle that.
-     */
-    private enum TokenizeState {
-        DEFAULT, WORD, NUMBER, FLOAT, STRING, OP_RELACIONAL, COMMENT
-    }
+    
+    // private enum TokenizeState {
+    //     DEFAULT, WORD, NUMBER, FLOAT, STRING, OP_RELACIONAL, COMMENT
+    // }
 
 }
