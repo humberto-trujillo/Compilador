@@ -1,5 +1,6 @@
 package compilador;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import compilador.Lexer.Token;
@@ -7,7 +8,9 @@ import compilador.Lexer.Token;
 public class Parser implements TokenInfo {
 	
 	private List<Token> tokens;
+	private List<Variable> variables = new ArrayList<Variable>();
 	private int pos, aux, aux2; //índice para la posición del tokenList
+	private boolean varAdd = false;
 	private String errorType = "Error de sintaxis encontrado! se esperaba ";
 	
 	public Parser (List<Token> tokens) {
@@ -20,9 +23,6 @@ public class Parser implements TokenInfo {
 			return false;
 		if(!listaSentencias())
 			return false;
-//		if(!finDePrograma())
-//			return false;
-		//System.out.print("Veredicto final: ");
 		return true;
 	}
 	
@@ -78,26 +78,52 @@ public class Parser implements TokenInfo {
 				aux2 = pos;
 				if(getType(pos++).equals(TokenType.IDENTIFICADOR)) {
 					if(getType(pos++).equals(TokenType.OPERATOR))
-						if(getType(pos++).equals(TokenType.FLOAT))
+						if(getType(pos++).equals(TokenType.FLOAT)){
+							if(!varAdd || !checaRepetido(aux)) {
+								variables.add(new Variable(tokens.get(aux).getText()));
+								varAdd = true;
+							}
 							return true;
+						}
 				}
 				pos = aux2;
 				if(getType(pos++).equals(TokenType.IDENTIFICADOR)) {
 					if(getType(pos++).equals(TokenType.OPERATOR))
-						if(getType(pos++).equals(TokenType.IDENTIFICADOR))
+						if(getType(pos++).equals(TokenType.IDENTIFICADOR)) {
+							if(!varAdd || !checaRepetido(aux)) {
+								variables.add(new Variable(tokens.get(aux).getText()));
+								varAdd = true;
+							}
 							return true;
+						}
 				}
 				pos = aux2;
-				if(getType(pos++).equals(TokenType.FLOAT))
+				if(getType(pos++).equals(TokenType.FLOAT)) {
+					if(!varAdd || !checaRepetido(aux)) {
+						variables.add(new Variable(tokens.get(aux).getText()));
+						varAdd = true;
+					}
 					return true;
+				}
 				pos = aux2;
-				if(getType(pos++).equals(TokenType.IDENTIFICADOR))
+				if(getType(pos++).equals(TokenType.IDENTIFICADOR)) {
+					if(!varAdd || !checaRepetido(aux)) {
+						variables.add(new Variable(tokens.get(aux).getText()));
+						varAdd = true;
+					}
 					return true;
+				}
 			}
 		}
-//		System.out.println("Asignacion: " + aux);
-//		print("No fue asignacion");
 		pos = aux;
+		return false;
+	}
+	
+	private boolean checaRepetido(int i) {
+		for(int j = 0; j < variables.size(); j++)
+			if(variables.get(j).getNombre().equals(tokens.get(i).getText())) {
+				return true;
+			}
 		return false;
 	}
 	
@@ -105,24 +131,24 @@ public class Parser implements TokenInfo {
 		aux = pos;
 		if(getType(pos++).equals(TokenType.LEER)) {
 			if(getType(pos++).equals(TokenType.IDENTIFICADOR)) {
+				if(!varAdd || !checaRepetido(pos-1)) {
+					variables.add(new Variable(tokens.get(pos-1).getText()));
+					varAdd = true;
+				}
 				return true;
 			}
 		}
-//		System.out.println("Leer: " + aux);
-//		print("No fue lectura");
 		pos = aux;
 		return false;
 	}
 	
 	private boolean escribir() {
 		aux = pos;
-//		System.out.println("Escribir: " + pos);
 		if(getType(pos++).equals(TokenType.ESCRIBIR)) {
 			if(getType(pos).equals(TokenType.IDENTIFICADOR) || getType(pos).equals(TokenType.STRING))
 				pos++;
 				return true;
 		}
-//		print("No fue escritura");
 		pos = aux;
 		return false;
 	}
@@ -147,8 +173,6 @@ public class Parser implements TokenInfo {
 						return true;
 					}
 		}
-//		System.out.println("Si: " + aux);
-//		print("No fue un Si");
 		pos = aux;
 		return false;
 	}
@@ -159,7 +183,6 @@ public class Parser implements TokenInfo {
 			if(getType(pos++).equals(TokenType.OP_RELACIONAL))
 				if(getType(pos++).equals(TokenType.IDENTIFICADOR))
 					return true;
-//		print("La condicion esta mal");
 		pos = aux;		
 		return false;
 	}
@@ -173,14 +196,6 @@ public class Parser implements TokenInfo {
 		return false;
 	}
 	
-//	private boolean finDePrograma() {
-//		if(getType(pos).equals(TokenType.FINPROG)) {
-//			return true;
-//		}
-//		Mensajes.despliegaError(errorType + "Fin de programa");
-//		return false;
-//	}
-	
 	private TokenType getType(int i) {
 		try{
 			return tokens.get(i).getToken();
@@ -188,6 +203,10 @@ public class Parser implements TokenInfo {
 		catch(IndexOutOfBoundsException e) {
 			return TokenType.EOF;
 		}
+	}
+	
+	public List<Variable> getVariables() {
+		return variables;
 	}
 	
 	private void print(String s) {

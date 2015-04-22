@@ -11,8 +11,24 @@ public class Variable {
 	}
 
 	public Variable(String nombre) {
-		super();
 		this.nombre = nombre;
 	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public Float getValor() {
+		return valor;
+	}
+
+	public void setValor(Float valor) {
+		this.valor = valor;
+	}
+	
 	
 }

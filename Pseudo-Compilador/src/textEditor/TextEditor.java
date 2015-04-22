@@ -32,6 +32,7 @@ import compilador.Lexer;
 import compilador.Lexer.Token;
 import compilador.Mensajes;
 import compilador.Parser;
+import compilador.Variable;
 
 import javax.swing.JTextArea;
 
@@ -240,11 +241,16 @@ public class TextEditor {
 		        }
 				Parser parser = new Parser(tokens);
 				b =  parser.programa();
-				System.out.println("Veredicto final: " + b.toString());
+				System.out.println("Veredicto final del parser: " + b.toString());
 				if(b)
 					Mensajes.despliegaMensaje("Enhorabuena!", "No se encontraron errores de sintaxis!");
 				else
 					Mensajes.despliegaError("Hubo errores de sintaxis!");
+				
+				List<Variable> variables = parser.getVariables();
+				for(int i = 0; i < variables.size(); i++) {
+					System.out.println("Variable "+ i + ":	"+variables.get(i).getNombre());
+				}
 				
 				BufferedWriter writer;
 			    try {
