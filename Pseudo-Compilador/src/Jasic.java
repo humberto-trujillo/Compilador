@@ -365,8 +365,7 @@ public class Jasic {
                 char operator = last(1).text.charAt(0);
                 Expression right = atomic();
                 expression = new OperatorExpression(expression, operator, right);
-            }
-            
+            }           
             return expression;
         }
         

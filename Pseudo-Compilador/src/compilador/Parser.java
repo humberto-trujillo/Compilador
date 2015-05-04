@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
 import compilador.Lexer.Token;
 
 public class Parser implements TokenInfo {
@@ -155,6 +156,7 @@ public class Parser implements TokenInfo {
 					variables.add(new Variable(tokens.get(pos-1).getText()));
 					varAdd = true;
 				}
+				sentencias.add(new SentenciaLeer(tokens.get(pos - 1).getText()));
 				return true;
 			}
 		}
@@ -258,6 +260,24 @@ public class Parser implements TokenInfo {
 			variables2.put(name, valor.evaluar());
 		}
 	}
+	
+	public class SentenciaLeer implements Sentencia {
+		private final String name;
+		public SentenciaLeer (String name) {
+			this.name=name;
+		}
+		@Override
+		public void ejecutar() {
+			String input = JOptionPane.showInputDialog("Introduce Valor para "+ name);
+			try {
+                float value = Float.parseFloat(input);
+                variables2.put(name, new ValorNumerico(value));
+            } catch (NumberFormatException e) {
+                variables2.put(name, new ValorString(input));
+            }
+		}
+		
+	}
 	//--------Tipos de valor------------------
 	public class ValorNumerico implements Valor {
 		private final float valor;
@@ -269,6 +289,19 @@ public class Parser implements TokenInfo {
 		public float toNumber(){return valor;}
 		public Valor evaluar(){return this;}
 		
+	}
+	
+	public class ValorString implements Valor {
+		private final String valor;
+		
+		public ValorString (String valor) {
+			this.valor = valor;
+		}
+		
+		@Override
+		public String toString() {return valor;}
+		public float toNumber() { return Float.parseFloat(valor); }
+        public Valor evaluar() { return this; }
 	}
 	
 	public class ExpresionVariable implements Expresion {
@@ -300,7 +333,12 @@ public class Parser implements TokenInfo {
 		if(getType(pos - 1).equals(TokenType.IDENTIFICADOR)){
 			return new ExpresionVariable(tokens.get(pos - 1).getText());
 		}
-		return new ValorNumerico(Float.parseFloat(tokens.get(pos - 1).getText()));
+		else if(getType(pos - 1).equals(TokenType.FLOAT)){
+			return new ValorNumerico(Float.parseFloat(tokens.get(pos - 1).getText()));
+		}
+		//si no es ID o Float, entonces es String
+		else
+			return new ValorString(tokens.get(pos - 1).getText());
 	}
 	
 //-------------Obtener Lista de sentencias-----------
@@ -310,9 +348,5 @@ public class Parser implements TokenInfo {
 //-------------Obtener Lista de variables-----------
 	public Map<String, Valor> getVariables2(){
 		return variables2;
-	}
-	
-	public void clearAll (){
-		
 	}
 }
