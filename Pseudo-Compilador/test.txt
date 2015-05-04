@@ -1,5 +1,9 @@
 @ comentario
 Inicio-de-programa
+	a = 10.0
+	b = 11.0
+	c = 12.0
+	Escribir "Programa de prueba!"
 	Leer N
 	@ solo acepta flotantes
 	Prom = 0.0

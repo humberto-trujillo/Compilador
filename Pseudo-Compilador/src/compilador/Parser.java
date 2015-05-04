@@ -1,7 +1,10 @@
 package compilador;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 import compilador.Lexer.Token;
 
@@ -9,9 +12,15 @@ public class Parser implements TokenInfo {
 	
 	private List<Token> tokens;
 	private List<Variable> variables = new ArrayList<Variable>();
-	private int pos, aux, aux2; //índice para la posición del tokenList
+	private int pos, aux, aux2; //ï¿½ndice para la posiciï¿½n del tokenList
 	private boolean varAdd = false;
 	private String errorType = "Error de sintaxis encontrado! se esperaba ";
+	
+	//---------Lista de sentencias---------
+	List<Sentencia> sentencias = new ArrayList<Sentencia>();
+	//---------diccionario de variables----
+	private final Map<String, Valor> variables2 = new HashMap<String, Valor>();
+	
 	
 	public Parser (List<Token> tokens) {
 		this.tokens = tokens;
@@ -26,7 +35,7 @@ public class Parser implements TokenInfo {
 		return true;
 	}
 	
-	//Este método checa todas las sentencias del programa
+	//Este mï¿½todo checa todas las sentencias del programa
 	private boolean listaSentencias() {
 		aux = pos;
 		while(!getType(pos).equals(TokenType.FINPROG)) {
@@ -59,8 +68,11 @@ public class Parser implements TokenInfo {
 	private boolean sentencia() {
 		if(leer())
 			return true;
-		if(escribir())
+		if(escribir()){
+			
 			return true;
+		}
+			
 		if(asignacion())
 			return true;
 		if(si())
@@ -100,6 +112,19 @@ public class Parser implements TokenInfo {
 				pos = aux2;
 				if(getType(pos++).equals(TokenType.FLOAT)) {
 					if(!varAdd || !checaRepetido(aux)) {
+						//agregar nueva sentencia de asignaciÃ³n
+						String name = tokens.get(aux).getText();
+						Expresion value = expresion();
+						sentencias.add(new SentenciaAsignacion(name,value));
+						
+						//pruebas
+						System.out.println(sentencias.size());
+//						Iterator it = variables2.keySet().iterator();
+//						while(it.hasNext()){
+//						  String key = it.next();
+//						  System.out.println("Clave: " + key + " -> Valor: " + variables2.get(key));
+//						}
+						
 						variables.add(new Variable(tokens.get(aux).getText()));
 						varAdd = true;
 					}
@@ -146,6 +171,7 @@ public class Parser implements TokenInfo {
 		aux = pos;
 		if(getType(pos++).equals(TokenType.ESCRIBIR)) {
 			if(getType(pos).equals(TokenType.IDENTIFICADOR) || getType(pos).equals(TokenType.STRING))
+				sentencias.add(new SentenciaEscribir(tokens.get(pos).getText()));
 				pos++;
 				return true;
 		}
@@ -212,5 +238,63 @@ public class Parser implements TokenInfo {
 	private void print(String s) {
 		System.out.println(s);
 	}
+//----------------Tipos de sentencias---------
+	public class SentenciaEscribir implements Sentencia {
+        private final String cadena;
+        
+        public SentenciaEscribir(String cadena) {
+            this.cadena = cadena;
+        }
+        
+        public void ejecutar() {
+            System.out.println(cadena);
+        }
+
+
+    }
 	
+	public class SentenciaAsignacion implements Sentencia {
+		private final String name;
+		private final Expresion valor;
+		public SentenciaAsignacion(String name, Expresion valor){
+			this.name = name;
+			this.valor = valor;
+		}
+		public void ejecutar(){
+			variables2.put(name, valor.evaluar());
+		}
+	}
+	//--------Tipos de valor------------------
+	public class ValorNumerico implements Valor {
+		private final float valor;
+		public ValorNumerico(float valor){
+			this.valor = valor;
+		}
+		@Override
+		public String toString(){return Float.toString(valor);}
+		public float toNumber(){return valor;}
+		public Valor evaluar(){return this;}
+		
+	}
+	
+	//---------Evaluar Expresiones------------
+	
+	//-----parsear Expresion-------
+	private Expresion expresion(){
+		return operador();
+	}
+	
+	private Expresion operador(){
+		Expresion expresion = atomico();
+		return expresion;
+	}
+	
+	private Expresion atomico(){
+		return new ValorNumerico(Float.parseFloat(tokens.get(pos - 1).getText()));
+	}
+	
+	//-------------Obtener Lista de sentencias-----------
+	public List<Sentencia> getSentencias(){
+		return sentencias;
+	}
 }

@@ -32,6 +32,7 @@ import compilador.Lexer;
 import compilador.Lexer.Token;
 import compilador.Mensajes;
 import compilador.Parser;
+import compilador.Sentencia;
 import compilador.Variable;
 
 import javax.swing.JTextArea;
@@ -59,6 +60,7 @@ public class TextEditor {
 	private JScrollPane jScrollPane2;
 	private File fileName = new File("noname.txt");
 	private JTextArea textArea;
+	private Parser parser;
 	/**
 	 * Launch the application.
 	 */
@@ -239,7 +241,7 @@ public class TextEditor {
 							"		Tipo: "+tokens.get(i).getToken() + "\n");
 					
 		        }
-				Parser parser = new Parser(tokens);
+				parser = new Parser(tokens);
 				b =  parser.programa();
 				System.out.println("Veredicto final del parser: " + b.toString());
 				if(b)
@@ -280,5 +282,20 @@ public class TextEditor {
 		textArea = new JTextArea();
 		textArea.setEditable(false);
 		jScrollPane2.setViewportView(textArea);
+		
+		JButton btnEjecutar = new JButton("Ejecutar");
+		btnEjecutar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int sentenciaActual= 0;
+				List<Sentencia> sentencias = parser.getSentencias();
+				while (sentenciaActual < sentencias.size()) {
+		            int thisStatement = sentenciaActual;
+		            sentenciaActual++;
+		            sentencias.get(thisStatement).ejecutar();
+		        }
+			}
+		});
+		btnEjecutar.setBounds(118, 11, 117, 29);
+		panel.add(btnEjecutar);
 	}
 }
