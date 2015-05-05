@@ -303,7 +303,7 @@ public class Parser implements TokenInfo {
 		public float toNumber() { return Float.parseFloat(valor); }
         public Valor evaluar() { return this; }
 	}
-	
+//------------Tipos de expresiones posibles-------------	
 	public class ExpresionVariable implements Expresion {
 		private final String name;
 		public ExpresionVariable(String name) {
@@ -317,9 +317,57 @@ public class Parser implements TokenInfo {
 		}
 	}
 	
+	public class ExpresionOperador implements Expresion {
+		private final Expresion derecha;
+		private final Expresion izquierda;
+		private final String operador;
+		
+		public ExpresionOperador (Expresion derecha, Expresion izquierda, String operador) {
+			this.derecha = derecha;
+			this.izquierda = izquierda;
+			this.operador = operador;
+		}
+		@Override
+		public Valor evaluar() {
+			Valor izqVal = izquierda.evaluar();
+			Valor derVal = derecha.evaluar();
+			
+			switch(operador){
+			case "+":
+				if (izqVal instanceof ValorNumerico){
+					return new ValorNumerico(izqVal.toNumber() + derVal.toNumber());
+				}
+				else
+					return new ValorString(izqVal.toString() + derVal.toString());
+			case "-":
+				
+				return new ValorNumerico(izqVal.toNumber() - derVal.toNumber());
+				
+			case "*":
+				return new ValorNumerico(izqVal.toNumber() * derVal.toNumber());
+			case "/":	
+				return new ValorNumerico(izqVal.toNumber() / derVal.toNumber());
+			case "==":
+				if (izqVal instanceof ValorNumerico) {
+					return new ValorNumerico((izqVal.toNumber() == derVal.toNumber())? 1:0);
+				}
+				else
+					return new ValorNumerico(izqVal.toString().equals(derVal.toString())? 1:0);
+			case "<=":
+				if (izqVal instanceof ValorNumerico) {
+					return new ValorNumerico((izqVal.toNumber() <= derVal.toNumber())? 1:0);
+				}
+				else
+					return new ValorNumerico((izqVal.toString().compareTo(derVal.toString()) < 0)? 1:0);
+			case ">=":	
+			}
+			throw new Error ("Operador Desconocido!");
+		}	
+		
+	}
+	
 //---------Evaluar Expresiones------------
 	
-	//-----parsear Expresion-------
 	private Expresion expresion(){
 		return operador();
 	}
