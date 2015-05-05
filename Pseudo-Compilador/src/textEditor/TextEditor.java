@@ -291,15 +291,13 @@ public class TextEditor {
 			public void actionPerformed(ActionEvent e) {
 				int sentenciaActual= 0;
 				List<Sentencia> sentencias = parser.getSentencias();
-				
-				
 
-				
 				while (sentenciaActual < sentencias.size()) {
 		            int thisStatement = sentenciaActual;
 		            sentenciaActual++;
 		            sentencias.get(thisStatement).ejecutar();
 		        }
+				
 				Map<String, Valor> variables = parser.getVariables2();
 				System.out.println("Numero total de variables: "+variables.size());
 				

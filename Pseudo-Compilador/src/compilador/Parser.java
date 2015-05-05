@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
+
 import compilador.Lexer.Token;
 
 public class Parser implements TokenInfo {
@@ -20,6 +21,10 @@ public class Parser implements TokenInfo {
 	List<Sentencia> sentencias = new ArrayList<Sentencia>();
 	//---------diccionario de variables----
 	private final Map<String, Valor> variables2 = new LinkedHashMap<String, Valor>();
+	//--------diccionario o maoa de etiquetas (indice de cada sentencia)
+	private final Map<String, Integer> etiquetas = new LinkedHashMap<String, Integer>();
+	//-----------sentencias actual--------
+	private int sentenciaActual;
 	
 	
 	public Parser (List<Token> tokens) {
@@ -84,6 +89,9 @@ public class Parser implements TokenInfo {
 	}
 	
 	private boolean asignacion() {
+		String name = "";
+		Expresion value;
+		
 		aux = pos;
 		if(getType(pos++).equals(TokenType.IDENTIFICADOR)) {
 			if(getType(pos++).equals(TokenType.EQUALS)) {
@@ -95,6 +103,10 @@ public class Parser implements TokenInfo {
 								variables.add(new Variable(tokens.get(aux).getText()));
 								varAdd = true;
 							}
+							name = tokens.get(aux).getText();
+							value = new ExpresionOperador(new ValorNumerico(Float.parseFloat(tokens.get(pos - 1).getText())), new ExpresionVariable(tokens.get(pos - 3).getText()),tokens.get(pos-2).getText());
+							sentencias.add(new SentenciaAsignacion(name,value));
+							
 							return true;
 						}
 				}
@@ -106,6 +118,9 @@ public class Parser implements TokenInfo {
 								variables.add(new Variable(tokens.get(aux).getText()));
 								varAdd = true;
 							}
+							name = tokens.get(aux).getText();
+							value = new ExpresionOperador(new ExpresionVariable(tokens.get(pos - 1).getText()), new ExpresionVariable(tokens.get(pos - 3).getText()),tokens.get(pos-2).getText());
+							sentencias.add(new SentenciaAsignacion(name,value));
 							return true;
 						}
 				}
@@ -117,8 +132,8 @@ public class Parser implements TokenInfo {
 						varAdd = true;
 					}
 					//agregar nueva sentencia de asignación
-					String name = tokens.get(aux).getText();
-					Expresion value = expresion();
+					name = tokens.get(aux).getText();
+					value = expresion();
 					sentencias.add(new SentenciaAsignacion(name,value)); //variable y valor float
 					return true;
 				}
@@ -129,8 +144,8 @@ public class Parser implements TokenInfo {
 						variables.add(new Variable(tokens.get(aux).getText()));
 						varAdd = true;
 					}
-					String name = tokens.get(aux).getText();
-					Expresion value = expresion();
+					name = tokens.get(aux).getText();
+					value = expresion();
 					sentencias.add(new SentenciaAsignacion(name,value)); //variable y valor float
 					return true;
 				}
@@ -192,11 +207,15 @@ public class Parser implements TokenInfo {
 	private boolean si() {
 		aux = pos;
 		if(getType(pos++).equals(TokenType.SI)) {
-			if(condicion())
-				if(getType(pos++).equals(TokenType.ENTONCES))
-					if(bloque() || sentencia()) {
-						return true;
-					}
+			//if(condicion())
+			if(getType(pos++).equals(TokenType.IDENTIFICADOR) || getType(pos).equals(TokenType.FLOAT))
+				if(getType(pos++).equals(TokenType.OP_RELACIONAL))
+					if(getType(pos++).equals(TokenType.IDENTIFICADOR) || getType(pos).equals(TokenType.FLOAT))
+						if(getType(pos++).equals(TokenType.ENTONCES))
+							if(bloque() || sentencia()) {
+								return true;
+						}
+			
 		}
 		pos = aux;
 		return false;
@@ -275,6 +294,33 @@ public class Parser implements TokenInfo {
             } catch (NumberFormatException e) {
                 variables2.put(name, new ValorString(input));
             }
+		}
+		
+	}
+	
+	public class SentenciaIf implements Sentencia {
+		private final Expresion expresion;
+		private final String label;
+		
+		public SentenciaIf (Expresion expresion, String label) {
+			this.expresion = expresion;
+			this.label = label;
+		}
+		@Override
+		public void ejecutar() {
+			float valor = expresion.evaluar().toNumber();
+			if (valor != 1){
+				
+			}
+		}		
+	}
+	
+	public class SentenciaMientras implements Sentencia {
+
+		@Override
+		public void ejecutar() {
+			// TODO Auto-generated method stub
+			
 		}
 		
 	}
@@ -359,7 +405,12 @@ public class Parser implements TokenInfo {
 				}
 				else
 					return new ValorNumerico((izqVal.toString().compareTo(derVal.toString()) < 0)? 1:0);
-			case ">=":	
+			case ">=":
+				if (izqVal instanceof ValorNumerico) {
+					return new ValorNumerico((izqVal.toNumber() >= derVal.toNumber())? 1:0);
+				}
+				else
+					return new ValorNumerico((izqVal.toString().compareTo(derVal.toString()) > 0)? 1:0);
 			}
 			throw new Error ("Operador Desconocido!");
 		}	
@@ -396,5 +447,13 @@ public class Parser implements TokenInfo {
 //-------------Obtener Lista de variables-----------
 	public Map<String, Valor> getVariables2(){
 		return variables2;
+	}
+//-------------Obtener Etiquetas de sentencias--------
+	public Map<String, Integer> getEtiquetas(){
+		return etiquetas;
+	}
+//------------obtener Sentencia actual----------
+	public int getSentenciaActual(){
+		return sentenciaActual;
 	}
 }
