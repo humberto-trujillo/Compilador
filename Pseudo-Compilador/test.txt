@@ -1,8 +1,13 @@
 @ comentario
 Inicio-de-programa
+	b = x
+	x = 1.0
+	b = x
 	a = 10.0
-	b = 11.0
+	a2 = a
+	@ b = 11.0
 	c = 12.0
+	Escribir a
 	Escribir "Programa de prueba!"
 	Leer N
 	@ solo acepta flotantes

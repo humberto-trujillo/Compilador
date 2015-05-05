@@ -1,10 +1,9 @@
 package compilador;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 
 import compilador.Lexer.Token;
 
@@ -19,7 +18,7 @@ public class Parser implements TokenInfo {
 	//---------Lista de sentencias---------
 	List<Sentencia> sentencias = new ArrayList<Sentencia>();
 	//---------diccionario de variables----
-	private final Map<String, Valor> variables2 = new HashMap<String, Valor>();
+	private final Map<String, Valor> variables2 = new LinkedHashMap<String, Valor>();
 	
 	
 	public Parser (List<Token> tokens) {
@@ -112,30 +111,26 @@ public class Parser implements TokenInfo {
 				pos = aux2;
 				if(getType(pos++).equals(TokenType.FLOAT)) {
 					if(!varAdd || !checaRepetido(aux)) {
-						//agregar nueva sentencia de asignación
-						String name = tokens.get(aux).getText();
-						Expresion value = expresion();
-						sentencias.add(new SentenciaAsignacion(name,value));
-						
-						//pruebas
-						System.out.println(sentencias.size());
-//						Iterator it = variables2.keySet().iterator();
-//						while(it.hasNext()){
-//						  String key = it.next();
-//						  System.out.println("Clave: " + key + " -> Valor: " + variables2.get(key));
-//						}
-						
+												
 						variables.add(new Variable(tokens.get(aux).getText()));
 						varAdd = true;
 					}
+					//agregar nueva sentencia de asignación
+					String name = tokens.get(aux).getText();
+					Expresion value = expresion();
+					sentencias.add(new SentenciaAsignacion(name,value)); //variable y valor float
 					return true;
 				}
 				pos = aux2;
 				if(getType(pos++).equals(TokenType.IDENTIFICADOR)) {
 					if(!varAdd || !checaRepetido(aux)) {
+						
 						variables.add(new Variable(tokens.get(aux).getText()));
 						varAdd = true;
 					}
+					String name = tokens.get(aux).getText();
+					Expresion value = expresion();
+					sentencias.add(new SentenciaAsignacion(name,value)); //variable y valor float
 					return true;
 				}
 			}
@@ -170,9 +165,11 @@ public class Parser implements TokenInfo {
 	private boolean escribir() {
 		aux = pos;
 		if(getType(pos++).equals(TokenType.ESCRIBIR)) {
-			if(getType(pos).equals(TokenType.IDENTIFICADOR) || getType(pos).equals(TokenType.STRING))
-				sentencias.add(new SentenciaEscribir(tokens.get(pos).getText()));
+			if(getType(pos).equals(TokenType.IDENTIFICADOR) || getType(pos).equals(TokenType.STRING)) {
 				pos++;
+				sentencias.add(new SentenciaEscribir(expresion()));
+			}
+				
 				return true;
 		}
 		pos = aux;
@@ -240,17 +237,14 @@ public class Parser implements TokenInfo {
 	}
 //----------------Tipos de sentencias---------
 	public class SentenciaEscribir implements Sentencia {
-        private final String cadena;
+        private final Expresion expresion;
         
-        public SentenciaEscribir(String cadena) {
-            this.cadena = cadena;
-        }
-        
+        public SentenciaEscribir(Expresion expresion) {
+            this.expresion = expresion;
+        }       
         public void ejecutar() {
-            System.out.println(cadena);
+            System.out.println(expresion.evaluar().toString());
         }
-
-
     }
 	
 	public class SentenciaAsignacion implements Sentencia {
@@ -277,7 +271,20 @@ public class Parser implements TokenInfo {
 		
 	}
 	
-	//---------Evaluar Expresiones------------
+	public class ExpresionVariable implements Expresion {
+		private final String name;
+		public ExpresionVariable(String name) {
+			this.name = name;
+		}
+		public Valor evaluar(){
+			if(variables2.containsKey(name)){
+				return variables2.get(name);
+			}
+			return new ValorNumerico(0);
+		}
+	}
+	
+//---------Evaluar Expresiones------------
 	
 	//-----parsear Expresion-------
 	private Expresion expresion(){
@@ -290,11 +297,22 @@ public class Parser implements TokenInfo {
 	}
 	
 	private Expresion atomico(){
+		if(getType(pos - 1).equals(TokenType.IDENTIFICADOR)){
+			return new ExpresionVariable(tokens.get(pos - 1).getText());
+		}
 		return new ValorNumerico(Float.parseFloat(tokens.get(pos - 1).getText()));
 	}
 	
-	//-------------Obtener Lista de sentencias-----------
+//-------------Obtener Lista de sentencias-----------
 	public List<Sentencia> getSentencias(){
 		return sentencias;
+	}
+//-------------Obtener Lista de variables-----------
+	public Map<String, Valor> getVariables2(){
+		return variables2;
+	}
+	
+	public void clearAll (){
+		
 	}
 }

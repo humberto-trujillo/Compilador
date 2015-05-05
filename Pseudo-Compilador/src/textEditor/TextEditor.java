@@ -26,13 +26,16 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import compilador.Lexer;
 import compilador.Lexer.Token;
 import compilador.Mensajes;
 import compilador.Parser;
 import compilador.Sentencia;
+import compilador.Valor;
 import compilador.Variable;
 
 import javax.swing.JTextArea;
@@ -288,11 +291,24 @@ public class TextEditor {
 			public void actionPerformed(ActionEvent e) {
 				int sentenciaActual= 0;
 				List<Sentencia> sentencias = parser.getSentencias();
+				
+				
+
+				
 				while (sentenciaActual < sentencias.size()) {
 		            int thisStatement = sentenciaActual;
 		            sentenciaActual++;
 		            sentencias.get(thisStatement).ejecutar();
 		        }
+				Map<String, Valor> variables = parser.getVariables2();
+				System.out.println("Numero total de variables: "+variables.size());
+				
+				Iterator<String> it = variables.keySet().iterator();
+				while(it.hasNext()){
+				  String key = it.next();
+				  System.out.println("Clave: " + key + " -> Valor: " + variables.get(key));
+				}
+				
 			}
 		});
 		btnEjecutar.setBounds(118, 11, 117, 29);

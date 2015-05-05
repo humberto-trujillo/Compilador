@@ -786,7 +786,6 @@ public class Jasic {
         @Override public String toString() { return value; }
         public double toNumber() { return Double.parseDouble(value); }
         public Value evaluate() { return this; }
-
         private final String value;
     }
 
