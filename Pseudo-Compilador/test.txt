@@ -1,29 +1,12 @@
 @ comentario
 Inicio-de-programa
-	b = x
-	x = 1.0
-	b = x
-	a = 10.0
-	a2 = a
-	@ b = 11.0
-	c = 12.0
-	Escribir a
-	Escribir "Programa de prueba!"
-	Leer N
-	@ solo acepta flotantes
-	Prom = 0.0
-	@ enteros no son aceptados ej. Prom = 0
-	I = 0.0
-	Mientras I < N
-		Inicio
-			Leer Calificacion
-			Prom = Prom + Calificacion
-			I = I + 1.0
-		Fin
-	Prom = Prom / N
-	Escribir Prom
-	
-	@ para probar Operador relacional
-	Si Prom >= N Entonces
-		Escribir "Aprobado"
+	var1 = 100.0
+	var2 = 100.0
+	si var1 == var2 entonces
+		inicio
+			escribir "simon"
+			escribir "es"
+			escribir "igual"
+		fin
+	escribir "fin"
 Fin-de-programa

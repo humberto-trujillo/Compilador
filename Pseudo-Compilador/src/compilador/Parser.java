@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.swing.JOptionPane;
-
 import compilador.Lexer.Token;
 
 public class Parser implements TokenInfo {
@@ -24,7 +22,8 @@ public class Parser implements TokenInfo {
 	//--------diccionario o maoa de etiquetas (indice de cada sentencia)
 	private final Map<String, Integer> etiquetas = new LinkedHashMap<String, Integer>();
 	//-----------sentencias actual--------
-	private int sentenciaActual;
+	private int sentenciaActual=0;
+	private int cntSentencia = 0;
 	
 	
 	public Parser (List<Token> tokens) {
@@ -61,8 +60,11 @@ public class Parser implements TokenInfo {
 					pos = aux;
 					return false;
 				}
+				else 
+					cntSentencia++;
 			}
 			pos++;
+			cntSentencia = 0;
 			return true;
 		}
 		pos = aux;
@@ -71,20 +73,27 @@ public class Parser implements TokenInfo {
 	
 	
 	private boolean sentencia() {
-		if(leer())
+		if(leer()){
+//			cntSentencia++;
 			return true;
+		}
 		if(escribir()){
-			
+//			cntSentencia++;
 			return true;
 		}
 			
-		if(asignacion())
+		if(asignacion()){
+//			cntSentencia++;
 			return true;
-		if(si())
+		}	
+		if(si()){
+//			cntSentencia++;
 			return true;
-		if(mientras())
+		}	
+		if(mientras()){
+//			cntSentencia++;
 			return true;
-		
+		}
 		return false;
 	}
 	
@@ -194,42 +203,55 @@ public class Parser implements TokenInfo {
 	}
 	
 	private boolean mientras() {
+		Expresion expresion;
 		aux = pos;
 		if(getType(pos++).equals(TokenType.MIENTRAS)) {
-			if(condicion())
-				if(bloque() || sentencia())
-				return true;
+			//if(condicion())
+			if(getType(pos++).equals(TokenType.IDENTIFICADOR))
+				if(getType(pos++).equals(TokenType.OP_RELACIONAL))
+					if(getType(pos++).equals(TokenType.IDENTIFICADOR)){
+							expresion = new ExpresionOperador(new ExpresionVariable(tokens.get(pos - 1).getText()), new ExpresionVariable(tokens.get(pos - 3).getText()),tokens.get(pos-2).getText());
+							sentencias.add(new SentenciaMientras(expresion));
+							if(bloque()) {
+								return true;
+							}
+					}		
 		}
 		pos = aux;
 		return false;
 	}
 	
 	private boolean si() {
+		Expresion condicion;
 		aux = pos;
 		if(getType(pos++).equals(TokenType.SI)) {
 			//if(condicion())
-			if(getType(pos++).equals(TokenType.IDENTIFICADOR) || getType(pos).equals(TokenType.FLOAT))
+			if(getType(pos++).equals(TokenType.IDENTIFICADOR))
 				if(getType(pos++).equals(TokenType.OP_RELACIONAL))
-					if(getType(pos++).equals(TokenType.IDENTIFICADOR) || getType(pos).equals(TokenType.FLOAT))
-						if(getType(pos++).equals(TokenType.ENTONCES))
-							if(bloque() || sentencia()) {
+					if(getType(pos++).equals(TokenType.IDENTIFICADOR))
+						if(getType(pos++).equals(TokenType.ENTONCES)) {
+							condicion = new ExpresionOperador(new ExpresionVariable(tokens.get(pos - 2).getText()), new ExpresionVariable(tokens.get(pos - 4).getText()),tokens.get(pos-3).getText());
+							sentencias.add(new SentenciaSi(condicion,sentencias.size()+1+cntSentencia+1));
+							print(""+(sentencias.size()+1+cntSentencia+1));
+							if(bloque()) {
+								print("Contador de sentencia: "+cntSentencia);
 								return true;
-						}
-			
+							}
+						}		
 		}
 		pos = aux;
 		return false;
 	}
 	
-	private boolean condicion() {
-		aux = pos;
-		if(getType(pos++).equals(TokenType.IDENTIFICADOR))
-			if(getType(pos++).equals(TokenType.OP_RELACIONAL))
-				if(getType(pos++).equals(TokenType.IDENTIFICADOR))
-					return true;
-		pos = aux;		
-		return false;
-	}
+//	private boolean condicion() {
+//		aux = pos;
+//		if(getType(pos++).equals(TokenType.IDENTIFICADOR))
+//			if(getType(pos++).equals(TokenType.OP_RELACIONAL))
+//				if(getType(pos++).equals(TokenType.IDENTIFICADOR))
+//					return true;
+//		pos = aux;		
+//		return false;
+//	}
 	
 	private boolean inicioDePrograma() {
 		if(getType(pos).equals(TokenType.INICIOPROG)) {
@@ -298,31 +320,45 @@ public class Parser implements TokenInfo {
 		
 	}
 	
-	public class SentenciaIf implements Sentencia {
+	public class SentenciaSi implements Sentencia {
 		private final Expresion expresion;
-		private final String label;
+		//private final String label;
+		private final int next;
 		
-		public SentenciaIf (Expresion expresion, String label) {
+		public SentenciaSi (Expresion expresion, int next) {
 			this.expresion = expresion;
-			this.label = label;
+			//this.label = label;
+			this.next = next;
 		}
 		@Override
 		public void ejecutar() {
 			float valor = expresion.evaluar().toNumber();
 			if (valor != 1){
-				
+				System.out.println("False");
+				sentenciaActual = next;
 			}
+			else
+				System.out.println("True");
 		}		
 	}
 	
 	public class SentenciaMientras implements Sentencia {
-
+		private final Expresion expresion;
+		//private final String label;
+		
+		public SentenciaMientras (Expresion expresion) {
+			this.expresion = expresion;
+			//this.label = label;
+		}
 		@Override
 		public void ejecutar() {
-			// TODO Auto-generated method stub
-			
+			float valor = expresion.evaluar().toNumber();
+			if (valor != 1){
+				System.out.println("False");
+			}
+			else
+				System.out.println("True");
 		}
-		
 	}
 	//--------Tipos de valor------------------
 	public class ValorNumerico implements Valor {
@@ -411,8 +447,22 @@ public class Parser implements TokenInfo {
 				}
 				else
 					return new ValorNumerico((izqVal.toString().compareTo(derVal.toString()) > 0)? 1:0);
+			case "<":
+				if (izqVal instanceof ValorNumerico) {
+					return new ValorNumerico((izqVal.toNumber() < derVal.toNumber())? 1:0);
+				}
+				else
+					return new ValorNumerico((izqVal.toString().compareTo(derVal.toString()) < 0)? 1:0);
+			case ">":
+				if (izqVal instanceof ValorNumerico) {
+					return new ValorNumerico((izqVal.toNumber() > derVal.toNumber())? 1:0);
+				}
+				else
+					return new ValorNumerico((izqVal.toString().compareTo(derVal.toString()) > 0)? 1:0);
 			}
-			throw new Error ("Operador Desconocido!");
+			
+	
+			throw new Error ("Operador Desconocido:" + operador);
 		}	
 		
 	}
@@ -455,5 +505,14 @@ public class Parser implements TokenInfo {
 //------------obtener Sentencia actual----------
 	public int getSentenciaActual(){
 		return sentenciaActual;
+	}
+//------------Interpretar------------
+	public void interpretar () {
+		sentenciaActual = 0;
+		while (sentenciaActual < sentencias.size()) {
+            int thisStatement = sentenciaActual;
+            sentenciaActual++;
+            sentencias.get(thisStatement).ejecutar();
+        }
 	}
 }

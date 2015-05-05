@@ -34,7 +34,6 @@ import compilador.Lexer;
 import compilador.Lexer.Token;
 import compilador.Mensajes;
 import compilador.Parser;
-import compilador.Sentencia;
 import compilador.Valor;
 import compilador.Variable;
 
@@ -289,14 +288,15 @@ public class TextEditor {
 		JButton btnEjecutar = new JButton("Ejecutar");
 		btnEjecutar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int sentenciaActual= 0;
-				List<Sentencia> sentencias = parser.getSentencias();
-
-				while (sentenciaActual < sentencias.size()) {
-		            int thisStatement = sentenciaActual;
-		            sentenciaActual++;
-		            sentencias.get(thisStatement).ejecutar();
-		        }
+//				int sentenciaActual= 0;
+//				List<Sentencia> sentencias = parser.getSentencias();
+//
+//				while (sentenciaActual < sentencias.size()) {
+//		            int thisStatement = sentenciaActual;
+//		            sentenciaActual++;
+//		            sentencias.get(thisStatement).ejecutar();
+//		        }
+				parser.interpretar();
 				
 				Map<String, Valor> variables = parser.getVariables2();
 				System.out.println("Numero total de variables: "+variables.size());
