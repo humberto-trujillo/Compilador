@@ -23,8 +23,9 @@ public class Parser implements TokenInfo {
 	private final Map<String, Integer> etiquetas = new LinkedHashMap<String, Integer>();
 	//-----------sentencias actual--------
 	private int sentenciaActual=0;
-	private int cntSentencia = 0;
 	
+	private int fin = 0;
+	private int brinco = 0;
 	
 	public Parser (List<Token> tokens) {
 		this.tokens = tokens;
@@ -60,11 +61,11 @@ public class Parser implements TokenInfo {
 					pos = aux;
 					return false;
 				}
-				else 
-					cntSentencia++;
 			}
+			String otroAux = "Fin"+fin++;
+			System.out.println("despues de fin brincar a: "+ otroAux);
+			etiquetas.put(otroAux, sentencias.size());
 			pos++;
-			cntSentencia = 0;
 			return true;
 		}
 		pos = aux;
@@ -74,24 +75,19 @@ public class Parser implements TokenInfo {
 	
 	private boolean sentencia() {
 		if(leer()){
-//			cntSentencia++;
 			return true;
 		}
 		if(escribir()){
-//			cntSentencia++;
 			return true;
 		}
 			
 		if(asignacion()){
-//			cntSentencia++;
 			return true;
 		}	
 		if(si()){
-//			cntSentencia++;
 			return true;
 		}	
 		if(mientras()){
-//			cntSentencia++;
 			return true;
 		}
 		return false;
@@ -231,12 +227,11 @@ public class Parser implements TokenInfo {
 					if(getType(pos++).equals(TokenType.IDENTIFICADOR))
 						if(getType(pos++).equals(TokenType.ENTONCES)) {
 							condicion = new ExpresionOperador(new ExpresionVariable(tokens.get(pos - 2).getText()), new ExpresionVariable(tokens.get(pos - 4).getText()),tokens.get(pos-3).getText());
-							sentencias.add(new SentenciaSi(condicion,sentencias.size()+1+cntSentencia+1));
-							print(""+(sentencias.size()+1+cntSentencia+1));
+							sentencias.add(new SentenciaSi(condicion,"Fin"+brinco++));						
 							if(bloque()) {
-								print("Contador de sentencia: "+cntSentencia);
 								return true;
 							}
+							
 						}		
 		}
 		pos = aux;
@@ -322,23 +317,25 @@ public class Parser implements TokenInfo {
 	
 	public class SentenciaSi implements Sentencia {
 		private final Expresion expresion;
-		//private final String label;
-		private final int next;
+		private final String label;
+		//private final int next;
 		
-		public SentenciaSi (Expresion expresion, int next) {
+		public SentenciaSi (Expresion expresion, String label) {
 			this.expresion = expresion;
-			//this.label = label;
-			this.next = next;
+			this.label = label;
+//			this.next = next;
 		}
 		@Override
 		public void ejecutar() {
-			float valor = expresion.evaluar().toNumber();
-			if (valor != 1){
-				System.out.println("False");
-				sentenciaActual = next;
+			if(etiquetas.containsKey(label)){
+				float valor = expresion.evaluar().toNumber();
+				if (valor != 1){
+					System.out.println("False");
+					sentenciaActual=etiquetas.get(label).intValue();
+				}
+				else
+					System.out.println("True");
 			}
-			else
-				System.out.println("True");
 		}		
 	}
 	
@@ -429,12 +426,20 @@ public class Parser implements TokenInfo {
 				return new ValorNumerico(izqVal.toNumber() * derVal.toNumber());
 			case "/":	
 				return new ValorNumerico(izqVal.toNumber() / derVal.toNumber());
+			case "%": 
+				return new ValorNumerico(izqVal.toNumber() % derVal.toNumber());
 			case "==":
 				if (izqVal instanceof ValorNumerico) {
 					return new ValorNumerico((izqVal.toNumber() == derVal.toNumber())? 1:0);
 				}
 				else
 					return new ValorNumerico(izqVal.toString().equals(derVal.toString())? 1:0);
+			case "#":
+				if (izqVal instanceof ValorNumerico) {
+					return new ValorNumerico((izqVal.toNumber() != derVal.toNumber())? 1:0);
+				}
+				else
+					return new ValorNumerico(izqVal.toString().equals(derVal.toString())? 0:1);
 			case "<=":
 				if (izqVal instanceof ValorNumerico) {
 					return new ValorNumerico((izqVal.toNumber() <= derVal.toNumber())? 1:0);
