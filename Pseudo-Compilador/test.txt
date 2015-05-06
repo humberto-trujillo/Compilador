@@ -2,7 +2,7 @@
 Inicio-de-programa
 	Leer N
 	Prom = 0.0
-	I = 2.0
+	I = 0.0
 	aprobado = 60.0
 	Mientras I < N
 		Inicio
@@ -12,9 +12,9 @@ Inicio-de-programa
 		Fin
 	Prom = Prom / N
 	Escribir Prom
-	@Si Prom >= aprobado entonces
-		@Inicio
-		@	Escribir "Aprobado!"
-		@Fin
+	Si Prom >= aprobado entonces
+		Inicio
+			Escribir "Aprobado!"
+		Fin
 	Escribir "Fin"	
 Fin-de-programa

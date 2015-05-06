@@ -23,15 +23,11 @@ public class Parser implements TokenInfo {
 	private final Map<String, Integer> etiquetas = new LinkedHashMap<String, Integer>();
 	//-----------sentencias actual--------
 	private int sentenciaActual=0;
-	//-----------si se encuentra dentro de Mientras--------
-	private boolean flag = false;
 	
-	//-----------indices de salto para sentencia SI------
+	//-----------indices de salto para sentencias SI y Mientras------
 	private int labelIndex = 0;
 	private int brinco = 0;
-	
-	//==========indices de salto para sentencia Mientras-----
-	//private int brincoMientras = 0;
+	private int brincoMientras = 0;
 	
 	public Parser (List<Token> tokens) {
 		this.tokens = tokens;
@@ -212,6 +208,7 @@ public class Parser implements TokenInfo {
 							condicion = new ExpresionOperador(new ExpresionVariable(tokens.get(pos - 1).getText()), new ExpresionVariable(tokens.get(pos - 3).getText()),tokens.get(pos-2).getText());
 							sentencias.add(new SentenciaMientras(condicion,"Fin"+brinco++));
 							if(bloque()) {
+								sentencias.add(new SentenciaCheckMientras(condicion,"Inicio"+brincoMientras++));
 								return true;
 							}
 					}		
@@ -344,11 +341,29 @@ public class Parser implements TokenInfo {
 				}
 				else{
 					System.out.println("True");
-					flag = true;
 				}										
 			}
 		}
 	}
+	
+	public class SentenciaCheckMientras implements Sentencia{
+		private final Expresion expresion;
+		private final String label;
+		public SentenciaCheckMientras(Expresion expresion, String label){
+			this.expresion = expresion;
+			this.label = label;
+		}
+		@Override
+		public void ejecutar() {
+			if(etiquetas.containsKey(label)){
+				float valor = expresion.evaluar().toNumber();
+				if(valor != 0){
+					sentenciaActual = etiquetas.get(label).intValue();
+				}
+			}
+		}
+	}
+
 	//--------Tipos de valor------------------
 	public class ValorNumerico implements Valor {
 		private final float valor;
