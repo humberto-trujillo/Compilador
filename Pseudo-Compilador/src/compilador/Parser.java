@@ -202,16 +202,54 @@ public class Parser implements TokenInfo {
 		Expresion condicion;
 		aux = pos;
 		if(getType(pos++).equals(TokenType.MIENTRAS)) {
-			if(getType(pos++).equals(TokenType.IDENTIFICADOR))
-				if(getType(pos++).equals(TokenType.OP_RELACIONAL))
-					if(getType(pos++).equals(TokenType.IDENTIFICADOR)){
+			if(getType(pos).equals(TokenType.IDENTIFICADOR)) {
+				pos++;
+				if(getType(pos++).equals(TokenType.OP_RELACIONAL)) {
+					if(getType(pos).equals(TokenType.IDENTIFICADOR)){
+							pos++;
 							condicion = new ExpresionOperador(new ExpresionVariable(tokens.get(pos - 1).getText()), new ExpresionVariable(tokens.get(pos - 3).getText()),tokens.get(pos-2).getText());
 							sentencias.add(new SentenciaMientras(condicion,"Fin"+brinco++));
 							if(bloque()) {
 								sentencias.add(new SentenciaCheckMientras(condicion,"Inicio"+brincoMientras++));
 								return true;
 							}
-					}		
+					}
+					if(getType(pos).equals(TokenType.FLOAT)){
+						pos++;
+						condicion = new ExpresionOperador(new ValorNumerico(Float.parseFloat(tokens.get(pos - 1).getText())), new ExpresionVariable(tokens.get(pos - 3).getText()),tokens.get(pos-2).getText());
+						sentencias.add(new SentenciaMientras(condicion,"Fin"+brinco++));
+						if(bloque()) {
+							sentencias.add(new SentenciaCheckMientras(condicion,"Inicio"+brincoMientras++));
+							return true;
+						}
+					}
+					
+				}
+			}	
+			if(getType(pos).equals(TokenType.FLOAT)) {
+				pos++;
+				if(getType(pos++).equals(TokenType.OP_RELACIONAL)) {
+					if(getType(pos).equals(TokenType.IDENTIFICADOR)){
+							pos++;
+							condicion = new ExpresionOperador(new ExpresionVariable(tokens.get(pos - 1).getText()), new ValorNumerico(Float.parseFloat(tokens.get(pos - 3).getText())),tokens.get(pos-2).getText());
+							sentencias.add(new SentenciaMientras(condicion,"Fin"+brinco++));
+							if(bloque()) {
+								sentencias.add(new SentenciaCheckMientras(condicion,"Inicio"+brincoMientras++));
+								return true;
+							}
+					}
+					if(getType(pos).equals(TokenType.FLOAT)){
+						pos++;
+						condicion = new ExpresionOperador(new ValorNumerico(Float.parseFloat(tokens.get(pos - 1).getText())), new ValorNumerico(Float.parseFloat(tokens.get(pos - 3).getText())),tokens.get(pos-2).getText());
+						sentencias.add(new SentenciaMientras(condicion,"Fin"+brinco++));
+						if(bloque()) {
+							sentencias.add(new SentenciaCheckMientras(condicion,"Inicio"+brincoMientras++));
+							return true;
+						}
+					}
+					
+				}
+			}	
 		}
 		pos = aux;
 		return false;
@@ -220,16 +258,36 @@ public class Parser implements TokenInfo {
 		Expresion condicion;
 		aux = pos;
 		if(getType(pos++).equals(TokenType.SI)) {
-			if(getType(pos++).equals(TokenType.IDENTIFICADOR))
+			if(getType(pos).equals(TokenType.IDENTIFICADOR) || getType(pos).equals(TokenType.FLOAT)){
+				pos++;
 				if(getType(pos++).equals(TokenType.OP_RELACIONAL))
-					if(getType(pos++).equals(TokenType.IDENTIFICADOR))
+					if(getType(pos).equals(TokenType.IDENTIFICADOR) || getType(pos).equals(TokenType.FLOAT)){
+						pos++;
 						if(getType(pos++).equals(TokenType.ENTONCES)) {
-							condicion = new ExpresionOperador(new ExpresionVariable(tokens.get(pos - 2).getText()), new ExpresionVariable(tokens.get(pos - 4).getText()),tokens.get(pos-3).getText());
-							sentencias.add(new SentenciaSi(condicion,"Fin"+brinco++));						
+							
+							if(getType(pos - 4).equals(TokenType.IDENTIFICADOR) && getType(pos - 2).equals(TokenType.IDENTIFICADOR)){
+								condicion = new ExpresionOperador(new ExpresionVariable(tokens.get(pos - 2).getText()), new ExpresionVariable(tokens.get(pos - 4).getText()),tokens.get(pos-3).getText());
+								sentencias.add(new SentenciaSi(condicion,"Fin"+brinco++));		
+							}
+							else if(getType(pos - 4).equals(TokenType.IDENTIFICADOR) && getType(pos - 2).equals(TokenType.FLOAT)){
+								condicion = new ExpresionOperador(new ValorNumerico(Float.parseFloat(tokens.get(pos - 2).getText())), new ExpresionVariable(tokens.get(pos - 4).getText()),tokens.get(pos-3).getText());
+								sentencias.add(new SentenciaSi(condicion,"Fin"+brinco++));		
+							}
+							else if(getType(pos - 4).equals(TokenType.FLOAT) && getType(pos - 2).equals(TokenType.FLOAT)){
+								condicion = new ExpresionOperador(new ValorNumerico(Float.parseFloat(tokens.get(pos - 2).getText())), new ValorNumerico(Float.parseFloat(tokens.get(pos - 4).getText())),tokens.get(pos-3).getText());
+								sentencias.add(new SentenciaSi(condicion,"Fin"+brinco++));		
+							}
+							else if(getType(pos - 4).equals(TokenType.FLOAT) && getType(pos - 2).equals(TokenType.IDENTIFICADOR)){
+								condicion = new ExpresionOperador(new ExpresionVariable(tokens.get(pos - 2).getText()),new ValorNumerico(Float.parseFloat(tokens.get(pos - 4).getText())),tokens.get(pos-3).getText());
+								sentencias.add(new SentenciaSi(condicion,"Fin"+brinco++));		
+							}	
 							if(bloque()) {
 								return true;
 							}	
-						}		
+						}
+					}
+			}
+			
 		}
 		pos = aux;
 		return false;
