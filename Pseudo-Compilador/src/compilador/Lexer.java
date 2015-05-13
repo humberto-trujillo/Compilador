@@ -11,23 +11,6 @@ import java.util.List;
 
 public class Lexer implements TokenInfo{
 
-//	public static void main(String[] args) {
-//		 if (args.length != 1) {
-//	            System.out.println("No hay archivo que leer...");
-//	            return;
-//	    }
-//		// Leer Script de Pseudocodigo ----------------------------------------------------- 
-//		String cadena = readFile(args[0]);
-//		System.out.println(cadena);
-//		
-//		// Imprimir tokens por nombre y tipo -----------------------------------------------------
-//		List<Token> tokens = tokenize(cadena);
-//		for(int i = 0; i < tokens.size(); i++) {
-//            System.out.println(i+"	Token: "+tokens.get(i).getText()+ "		Tipo: "+tokens.get(i).getToken());
-//        }
-//
-//	}
-	// Metodo para leer script de pseudocodigo -----------------------------------------------------
 	public static String readFile(String path) {
         try {
             FileInputStream stream = new FileInputStream(path);
@@ -190,40 +173,21 @@ public class Lexer implements TokenInfo{
      
         return tokens;
     }
-	
-	// Token data --------------------------------------------------------------
-
-   
-    // public static enum TokenType {
-    //     WORD, NUMBER, FLOAT, STRING, LINE,
-    //     EQUALS, OPERATOR, EOF, 
-    //     INICIOPROG, FINPROG, OP_RELACIONAL,
-    //     IDENTIFICADOR, LEER, ESCRIBIR, SI,
-    //     ENTONCES, MIENTRAS, INICIO, FIN
-    // }
-    
-    
     public static class Token {
 
-        public Token(String text, TokenType type) {
-            this.text = text;
-            this.type = type;
-        }
-        public final String text;
-        public final TokenType type;
-        
-        public TokenType getToken(){
-        	return type;
-        }
-        public String getText(){
-        	return text;
-        }
+    	public Token(String text, TokenType type) {
+    	    this.text = text;
+    	    this.type = type;
+    	}
+    	public final String text;
+    	public final TokenType type;
 
-    }
-    
-    
-    // private enum TokenizeState {
-    //     DEFAULT, WORD, NUMBER, FLOAT, STRING, OP_RELACIONAL, COMMENT
-    // }
+    	public TokenType getToken(){
+    		return type;
+    	}
+    	public String getText(){
+    		return text;
+    	}
 
+    } 
 }

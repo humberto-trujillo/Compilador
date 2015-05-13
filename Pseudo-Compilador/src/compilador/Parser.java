@@ -4,21 +4,23 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.swing.JOptionPane;
+
+import textEditor.TextEditor;
 import compilador.Lexer.Token;
+import compilador.TipoValor.*;
 
 public class Parser implements TokenInfo {
 	
 	private List<Token> tokens;
-	private List<Variable> variables = new ArrayList<Variable>();
 	private int pos, aux, aux2; //�ndice para la posici�n del tokenList
-	private boolean varAdd = false;
 	private String errorType = "Error de sintaxis encontrado! se esperaba ";
 	
 	//---------Lista de sentencias---------
 	List<Sentencia> sentencias = new ArrayList<Sentencia>();
 	//---------diccionario de variables----
-	private final Map<String, Valor> variables2 = new LinkedHashMap<String, Valor>();
+	private final Map<String, Valor> variables = new LinkedHashMap<String, Valor>();
 	//--------diccionario o maoa de etiquetas (indice de cada sentencia)
 	private final Map<String, Integer> etiquetas = new LinkedHashMap<String, Integer>();
 	//-----------sentencias actual--------
@@ -58,7 +60,7 @@ public class Parser implements TokenInfo {
 	private boolean bloque() {
 		aux = pos;
 		String label;
-		
+	
 		if(getType(pos++).equals(TokenType.INICIO)) {
 			label = "Inicio"+labelIndex;
 			etiquetas.put(label, sentencias.size() - 1);
@@ -69,7 +71,6 @@ public class Parser implements TokenInfo {
 					return false;
 				}
 			}
-			
 			//Se coloca una etiqueta a la siguiente sentencia despues del token FIN
 			label = "Fin"+labelIndex++;
 			etiquetas.put(label, sentencias.size());
@@ -78,7 +79,7 @@ public class Parser implements TokenInfo {
 		}
 		pos = aux;
 		return false;
-	}	
+	}
 	private boolean sentencia() {
 		if(leer())
 			return true;
@@ -104,14 +105,9 @@ public class Parser implements TokenInfo {
 				if(getType(pos++).equals(TokenType.IDENTIFICADOR)) {
 					if(getType(pos++).equals(TokenType.OPERATOR))
 						if(getType(pos++).equals(TokenType.FLOAT)){
-							if(!varAdd || !checaRepetido(aux)) {
-								variables.add(new Variable(tokens.get(aux).getText()));
-								varAdd = true;
-							}
 							name = tokens.get(aux).getText();
 							value = new ExpresionOperador(new ValorNumerico(Float.parseFloat(tokens.get(pos - 1).getText())), new ExpresionVariable(tokens.get(pos - 3).getText()),tokens.get(pos-2).getText());
 							sentencias.add(new SentenciaAsignacion(name,value));
-							
 							return true;
 						}
 				}
@@ -119,10 +115,6 @@ public class Parser implements TokenInfo {
 				if(getType(pos++).equals(TokenType.IDENTIFICADOR)) {
 					if(getType(pos++).equals(TokenType.OPERATOR))
 						if(getType(pos++).equals(TokenType.IDENTIFICADOR)) {
-							if(!varAdd || !checaRepetido(aux)) {
-								variables.add(new Variable(tokens.get(aux).getText()));
-								varAdd = true;
-							}
 							name = tokens.get(aux).getText();
 							value = new ExpresionOperador(new ExpresionVariable(tokens.get(pos - 1).getText()), new ExpresionVariable(tokens.get(pos - 3).getText()),tokens.get(pos-2).getText());
 							sentencias.add(new SentenciaAsignacion(name,value));
@@ -131,11 +123,6 @@ public class Parser implements TokenInfo {
 				}
 				pos = aux2;
 				if(getType(pos++).equals(TokenType.FLOAT)) {
-					if(!varAdd || !checaRepetido(aux)) {
-												
-						variables.add(new Variable(tokens.get(aux).getText()));
-						varAdd = true;
-					}
 					//agregar nueva sentencia de asignación
 					name = tokens.get(aux).getText();
 					value = expresion();
@@ -144,11 +131,7 @@ public class Parser implements TokenInfo {
 				}
 				pos = aux2;
 				if(getType(pos++).equals(TokenType.IDENTIFICADOR)) {
-					if(!varAdd || !checaRepetido(aux)) {
-						
-						variables.add(new Variable(tokens.get(aux).getText()));
-						varAdd = true;
-					}
+
 					name = tokens.get(aux).getText();
 					value = expresion();
 					sentencias.add(new SentenciaAsignacion(name,value)); //variable y valor float
@@ -160,22 +143,11 @@ public class Parser implements TokenInfo {
 		return false;
 	}
 	
-	private boolean checaRepetido(int i) {
-		for(int j = 0; j < variables.size(); j++)
-			if(variables.get(j).getNombre().equals(tokens.get(i).getText())) {
-				return true;
-			}
-		return false;
-	}
 	
 	private boolean leer() {
 		aux = pos;
 		if(getType(pos++).equals(TokenType.LEER)) {
 			if(getType(pos++).equals(TokenType.IDENTIFICADOR)) {
-				if(!varAdd || !checaRepetido(pos-1)) {
-					variables.add(new Variable(tokens.get(pos-1).getText()));
-					varAdd = true;
-				}
 				sentencias.add(new SentenciaLeer(tokens.get(pos - 1).getText()));
 				return true;
 			}
@@ -300,7 +272,6 @@ public class Parser implements TokenInfo {
 		Mensajes.despliegaError(errorType + "Inicio de programa");
 		return false;
 	}
-	
 	private TokenType getType(int i) {
 		try{
 			return tokens.get(i).getToken();
@@ -309,14 +280,10 @@ public class Parser implements TokenInfo {
 			return TokenType.EOF;
 		}
 	}
-	
-	public List<Variable> getVariables() {
-		return variables;
-	}
-	
 	private void print(String s) {
 		System.out.println(s);
 	}
+	
 //----------------Tipos de sentencias---------
 	public class SentenciaEscribir implements Sentencia {
         private final Expresion expresion;
@@ -326,6 +293,7 @@ public class Parser implements TokenInfo {
         }       
         public void ejecutar() {
             System.out.println(expresion.evaluar().toString());
+            TextEditor.textArea.append(expresion.evaluar().toString() + "\n");
         }
     }
 	
@@ -337,7 +305,7 @@ public class Parser implements TokenInfo {
 			this.valor = valor;
 		}
 		public void ejecutar(){
-			variables2.put(name, valor.evaluar());
+			variables.put(name, valor.evaluar());
 		}
 	}
 	
@@ -349,11 +317,15 @@ public class Parser implements TokenInfo {
 		@Override
 		public void ejecutar() {
 			String input = JOptionPane.showInputDialog("Introduce Valor para "+ name);
+			
+			while(input == null || input.isEmpty())
+				input = JOptionPane.showInputDialog("Introduce Valor valido para "+ name);
+			
 			try {
                 float value = Float.parseFloat(input);
-                variables2.put(name, new ValorNumerico(value));
+                variables.put(name, new ValorNumerico(value));
             } catch (NumberFormatException e) {
-                variables2.put(name, new ValorString(input));
+                variables.put(name, new ValorString(input));
             }
 		}
 		
@@ -421,32 +393,7 @@ public class Parser implements TokenInfo {
 			}
 		}
 	}
-
-	//--------Tipos de valor------------------
-	public class ValorNumerico implements Valor {
-		private final float valor;
-		public ValorNumerico(float valor){
-			this.valor = valor;
-		}
-		@Override
-		public String toString(){return Float.toString(valor);}
-		public float toNumber(){return valor;}
-		public Valor evaluar(){return this;}
-		
-	}
 	
-	public class ValorString implements Valor {
-		private final String valor;
-		
-		public ValorString (String valor) {
-			this.valor = valor;
-		}
-		
-		@Override
-		public String toString() {return valor;}
-		public float toNumber() { return Float.parseFloat(valor); }
-        public Valor evaluar() { return this; }
-	}
 //------------Tipos de expresiones posibles-------------	
 	public class ExpresionVariable implements Expresion {
 		private final String name;
@@ -454,8 +401,8 @@ public class Parser implements TokenInfo {
 			this.name = name;
 		}
 		public Valor evaluar(){
-			if(variables2.containsKey(name)){
-				return variables2.get(name);
+			if(variables.containsKey(name)){
+				return variables.get(name);
 			}
 			return new ValorNumerico(0);
 		}
@@ -530,8 +477,6 @@ public class Parser implements TokenInfo {
 				else
 					return new ValorNumerico((izqVal.toString().compareTo(derVal.toString()) > 0)? 1:0);
 			}
-			
-	
 			throw new Error ("Operador Desconocido:" + operador);
 		}	
 		
@@ -565,8 +510,8 @@ public class Parser implements TokenInfo {
 		return sentencias;
 	}
 //-------------Obtener Lista de variables-----------
-	public Map<String, Valor> getVariables2(){
-		return variables2;
+	public Map<String, Valor> getVariables(){
+		return variables;
 	}
 //-------------Obtener Etiquetas de sentencias--------
 	public Map<String, Integer> getEtiquetas(){
@@ -578,6 +523,10 @@ public class Parser implements TokenInfo {
 	}
 //------------Interpretar------------
 	public void interpretar () {
+		if (sentencias.isEmpty()){
+			TextEditor.textArea.setText("No hay sentencias que ejecutar!\n");
+			return;
+		}
 		sentenciaActual = 0;
 		while (sentenciaActual < sentencias.size()) {
             int thisStatement = sentenciaActual;

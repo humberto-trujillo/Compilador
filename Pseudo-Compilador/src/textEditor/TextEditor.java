@@ -35,9 +35,12 @@ import compilador.Lexer.Token;
 import compilador.Mensajes;
 import compilador.Parser;
 import compilador.Valor;
-import compilador.Variable;
+
 
 import javax.swing.JTextArea;
+import javax.swing.JToolBar;
+import java.awt.Button;
+import javax.swing.ImageIcon;
 
 public class TextEditor {
 
@@ -61,7 +64,7 @@ public class TextEditor {
 	private JEditorPane editPane;
 	private JScrollPane jScrollPane2;
 	private File fileName = new File("noname.txt");
-	private JTextArea textArea;
+	public static JTextArea textArea;
 	private Parser parser;
 	/**
 	 * Launch the application.
@@ -251,10 +254,6 @@ public class TextEditor {
 				else
 					Mensajes.despliegaError("Hubo errores de sintaxis!");
 				
-				List<Variable> variables = parser.getVariables();
-				for(int i = 0; i < variables.size(); i++) {
-					System.out.println("Variable "+ i + ":	"+variables.get(i).getNombre());
-				}
 				
 				BufferedWriter writer;
 			    try {
@@ -288,28 +287,33 @@ public class TextEditor {
 		JButton btnEjecutar = new JButton("Ejecutar");
 		btnEjecutar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-//				int sentenciaActual= 0;
-//				List<Sentencia> sentencias = parser.getSentencias();
-//
-//				while (sentenciaActual < sentencias.size()) {
-//		            int thisStatement = sentenciaActual;
-//		            sentenciaActual++;
-//		            sentencias.get(thisStatement).ejecutar();
-//		        }
+				if(parser == null){
+					textArea.setText("Se Necesita parsear instrucciones\n");
+					return;
+				}
+				textArea.setText("");
 				parser.interpretar();
 				
-				Map<String, Valor> variables = parser.getVariables2();
+				Map<String, Valor> variables = parser.getVariables();
 				System.out.println("Numero total de variables: "+variables.size());
-				
+				textArea.append("Numero total de variables: "+variables.size()+"\n\n");
 				Iterator<String> it = variables.keySet().iterator();
+				
 				while(it.hasNext()){
 				  String key = it.next();
-				  System.out.println("Clave: " + key + " -> Valor: " + variables.get(key));
+				  System.out.println("Var: " + key + " -> Valor: " + variables.get(key));
+				  textArea.append("Var: " + key + " -> Valor: " + variables.get(key)+"\n");
 				}
 				
 			}
 		});
-		btnEjecutar.setBounds(118, 11, 117, 29);
+		btnEjecutar.setBounds(123, 11, 117, 29);
 		panel.add(btnEjecutar);
+		
+		JToolBar toolBar = new JToolBar();
+		frmEditorDePseudocdigo.getContentPane().add(toolBar, BorderLayout.NORTH);
+		
+		JButton btnNewButton = new JButton("New button");
+		toolBar.add(btnNewButton);
 	}
 }

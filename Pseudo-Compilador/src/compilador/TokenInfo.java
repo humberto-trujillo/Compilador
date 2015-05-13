@@ -12,7 +12,5 @@ public interface TokenInfo {
 	 
 	 enum TokenizeState {
 	        DEFAULT, WORD, NUMBER, FLOAT, STRING, OP_RELACIONAL, COMMENT
-	    }
-	 
-	    
+	    }	    
 }
