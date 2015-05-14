@@ -94,8 +94,6 @@ public class Parser implements TokenInfo {
 			return true;
 		if(si())
 			return true;
-		if(sino())
-			return true;
 		if(repite())
 			return true;
 		if(mientras())
@@ -301,6 +299,9 @@ public class Parser implements TokenInfo {
 								sentencias.add(new SentenciaSi(condicion,"Fin"+brinco++));		
 							}	
 							if(bloque()) {
+								if(sino()){
+									return true;
+								}
 								return true;
 							}	
 						}
