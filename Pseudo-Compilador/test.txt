@@ -3,7 +3,6 @@ Inicio-de-programa
 	Leer N
 	Prom = 0.0
 	I = 0.0
-	aprobado = 60.0
 	Mientras I < N
 		Inicio
 			Leer Calificacion
@@ -12,9 +11,13 @@ Inicio-de-programa
 		Fin
 	Prom = Prom / N
 	Escribir Prom
-	Si Prom >= aprobado entonces
+	Si Prom >= 60.0 entonces
 		Inicio
 			Escribir "Aprobado!"
 		Fin
-	Escribir "Fin"	
+	Escribir "Fin"
+	repite 3.0 veces
+		inicio
+			Escribir "ORA ORA!"
+		fin	
 Fin-de-programa

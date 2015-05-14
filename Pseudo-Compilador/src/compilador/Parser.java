@@ -1,6 +1,7 @@
 package compilador;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,10 +27,11 @@ public class Parser implements TokenInfo {
 	//-----------sentencias actual--------
 	private int sentenciaActual=0;
 	
-	//-----------indices de salto para sentencias SI y Mientras------
+	//-----------indices de salto para sentencias SI, Mientras, repite------
 	private int labelIndex = 0;
 	private int brinco = 0;
-	private int brincoMientras = 0;
+	//-----------Contador Repite-----------
+	private int repiteCnt = 0;
 	
 	public Parser (List<Token> tokens) {
 		this.tokens = tokens;
@@ -60,10 +62,11 @@ public class Parser implements TokenInfo {
 	private boolean bloque() {
 		aux = pos;
 		String label;
-	
+		int indexAux;
 		if(getType(pos++).equals(TokenType.INICIO)) {
-			label = "Inicio"+labelIndex;
-			etiquetas.put(label, sentencias.size() - 1);
+			indexAux=labelIndex;
+			label = "Inicio"+labelIndex++;
+			etiquetas.put(label, sentencias.size());
 			
 			while(!getType(pos).equals(TokenType.FIN)) {
 				if(!sentencia()) {
@@ -72,7 +75,7 @@ public class Parser implements TokenInfo {
 				}
 			}
 			//Se coloca una etiqueta a la siguiente sentencia despues del token FIN
-			label = "Fin"+labelIndex++;
+			label = "Fin"+indexAux;
 			etiquetas.put(label, sentencias.size());
 			pos++;
 			return true;
@@ -88,6 +91,8 @@ public class Parser implements TokenInfo {
 		if(asignacion())
 			return true;
 		if(si())
+			return true;
+		if(repite())
 			return true;
 		if(mientras())
 			return true;
@@ -172,6 +177,7 @@ public class Parser implements TokenInfo {
 	
 	private boolean mientras() {
 		Expresion condicion;
+		int brincoAux;
 		aux = pos;
 		if(getType(pos++).equals(TokenType.MIENTRAS)) {
 			if(getType(pos).equals(TokenType.IDENTIFICADOR)) {
@@ -181,8 +187,9 @@ public class Parser implements TokenInfo {
 							pos++;
 							condicion = new ExpresionOperador(new ExpresionVariable(tokens.get(pos - 1).getText()), new ExpresionVariable(tokens.get(pos - 3).getText()),tokens.get(pos-2).getText());
 							sentencias.add(new SentenciaMientras(condicion,"Fin"+brinco++));
+							brincoAux = brinco - 1;
 							if(bloque()) {
-								sentencias.add(new SentenciaCheckMientras(condicion,"Inicio"+brincoMientras++));
+								sentencias.add(new SentenciaCheckMientras(condicion,"Inicio"+(brincoAux)));
 								return true;
 							}
 					}
@@ -190,8 +197,9 @@ public class Parser implements TokenInfo {
 						pos++;
 						condicion = new ExpresionOperador(new ValorNumerico(Float.parseFloat(tokens.get(pos - 1).getText())), new ExpresionVariable(tokens.get(pos - 3).getText()),tokens.get(pos-2).getText());
 						sentencias.add(new SentenciaMientras(condicion,"Fin"+brinco++));
+						brincoAux = brinco - 1;
 						if(bloque()) {
-							sentencias.add(new SentenciaCheckMientras(condicion,"Inicio"+brincoMientras++));
+							sentencias.add(new SentenciaCheckMientras(condicion,"Inicio"+(brincoAux)));
 							return true;
 						}
 					}
@@ -205,8 +213,9 @@ public class Parser implements TokenInfo {
 							pos++;
 							condicion = new ExpresionOperador(new ExpresionVariable(tokens.get(pos - 1).getText()), new ValorNumerico(Float.parseFloat(tokens.get(pos - 3).getText())),tokens.get(pos-2).getText());
 							sentencias.add(new SentenciaMientras(condicion,"Fin"+brinco++));
+							brincoAux = brinco - 1;
 							if(bloque()) {
-								sentencias.add(new SentenciaCheckMientras(condicion,"Inicio"+brincoMientras++));
+								sentencias.add(new SentenciaCheckMientras(condicion,"Inicio"+(brincoAux)));
 								return true;
 							}
 					}
@@ -214,8 +223,9 @@ public class Parser implements TokenInfo {
 						pos++;
 						condicion = new ExpresionOperador(new ValorNumerico(Float.parseFloat(tokens.get(pos - 1).getText())), new ValorNumerico(Float.parseFloat(tokens.get(pos - 3).getText())),tokens.get(pos-2).getText());
 						sentencias.add(new SentenciaMientras(condicion,"Fin"+brinco++));
+						brincoAux = brinco - 1;
 						if(bloque()) {
-							sentencias.add(new SentenciaCheckMientras(condicion,"Inicio"+brincoMientras++));
+							sentencias.add(new SentenciaCheckMientras(condicion,"Inicio"+(brincoAux)));
 							return true;
 						}
 					}
@@ -226,6 +236,41 @@ public class Parser implements TokenInfo {
 		pos = aux;
 		return false;
 	}
+	
+	private boolean repite(){
+		int brincoAux;
+		int veces;
+		aux = pos;
+		if(getType(pos++).equals(TokenType.REPITE)) {
+			if(getType(pos).equals(TokenType.IDENTIFICADOR) || getType(pos).equals(TokenType.FLOAT)) {
+				pos++;
+				if(getType(pos++).equals(TokenType.VECES)){
+					if(getType(pos - 2).equals(TokenType.IDENTIFICADOR)){
+						veces = (int)(new ExpresionVariable(tokens.get(pos - 2).getText()).evaluar().toNumber()); 
+						sentencias.add(new SentenciaRepite(new ExpresionVariable(tokens.get(pos - 2).getText()),"Fin"+brinco++));
+						brincoAux = brinco - 1;
+					}
+						
+					else{
+						veces = (int)(new ValorNumerico(Float.parseFloat(tokens.get(pos - 2).getText())).evaluar().toNumber()); 
+						sentencias.add(new SentenciaRepite(new ValorNumerico(Float.parseFloat(tokens.get(pos - 2).getText())),"Fin"+brinco++));
+						brincoAux = brinco - 1;
+					}
+					
+					if (bloque()){
+						veces--;
+						sentencias.add(new SentenciaCheckRepite("Inicio"+(brincoAux)));
+						return true;
+					}
+					
+				}
+					
+			}
+		}
+		pos = aux;
+		return false;
+	}
+	
 	private boolean si() {
 		Expresion condicion;
 		aux = pos;
@@ -263,7 +308,9 @@ public class Parser implements TokenInfo {
 		}
 		pos = aux;
 		return false;
-	}	
+	}
+	
+	
 	private boolean inicioDePrograma() {
 		if(getType(pos).equals(TokenType.INICIOPROG)) {
 			pos++;
@@ -379,6 +426,7 @@ public class Parser implements TokenInfo {
 	public class SentenciaCheckMientras implements Sentencia{
 		private final Expresion expresion;
 		private final String label;
+		
 		public SentenciaCheckMientras(Expresion expresion, String label){
 			this.expresion = expresion;
 			this.label = label;
@@ -393,6 +441,59 @@ public class Parser implements TokenInfo {
 			}
 		}
 	}
+	
+	public class SentenciaRepite implements Sentencia {
+		
+		private final Expresion expresion;
+		private final String label;
+		
+		public SentenciaRepite (Expresion expresion, String label) {
+			this.expresion = expresion;
+			this.label = label;
+		}
+		@Override
+		public void ejecutar() {
+			if(etiquetas.containsKey(label)){
+				float valor = expresion.evaluar().toNumber();				
+				if (valor <= 0){
+					System.out.println("No repite");
+					sentenciaActual=etiquetas.get(label).intValue();
+				}
+				else{
+					setRepiteCnt((int)valor);
+					System.out.println("Repite "+(int)valor+" veces.");
+				}										
+			}
+			
+		}
+	}
+	
+	public class SentenciaCheckRepite implements Sentencia {
+		
+		private final String label;
+		
+		public SentenciaCheckRepite (String label) {
+			this.label = label;
+		}
+		@Override
+		public void ejecutar() {
+			if(etiquetas.containsKey(label)){
+				if(getRepiteCnt() > 1){
+					System.out.println("Repite...");
+					sentenciaActual=etiquetas.get(label).intValue();
+					repiteCnt--;
+				}	
+				else{
+					System.out.println("Fin de ciclo repeat");
+					setRepiteCnt(0);
+				}
+					
+			}
+			
+		}
+	}
+	
+	
 	
 //------------Tipos de expresiones posibles-------------	
 	public class ExpresionVariable implements Expresion {
@@ -521,8 +622,23 @@ public class Parser implements TokenInfo {
 	public int getSentenciaActual(){
 		return sentenciaActual;
 	}
+//------------Contador Repite	
+	public int getRepiteCnt() {
+		return repiteCnt;
+	}
+
+	public void setRepiteCnt(int repiteCnt) {
+		this.repiteCnt = repiteCnt;
+	}
 //------------Interpretar------------
 	public void interpretar () {
+		Iterator<String> it = etiquetas.keySet().iterator();
+		
+		while(it.hasNext()){
+		  String key = it.next();
+		  System.out.println("Var: " + key + " -> Valor: " + etiquetas.get(key));
+		}
+		
 		if (sentencias.isEmpty()){
 			TextEditor.textArea.setText("No hay sentencias que ejecutar!\n");
 			return;
