@@ -1,60 +1,43 @@
+ORA ORA!
+ya!
+ya!
+ORA ORA!
+ya!
+ya!
+ORA ORA!
+ya!
+ya!
+Numero total de variables: 0
+
 0	Token: Inicio-de-programa		Tipo: INICIOPROG
-1	Token: Leer		Tipo: LEER
-2	Token: N		Tipo: IDENTIFICADOR
-3	Token: Prom		Tipo: IDENTIFICADOR
-4	Token: =		Tipo: EQUALS
-5	Token: 0.0		Tipo: FLOAT
-6	Token: I		Tipo: IDENTIFICADOR
-7	Token: =		Tipo: EQUALS
-8	Token: 0.0		Tipo: FLOAT
-9	Token: Mientras		Tipo: MIENTRAS
-10	Token: I		Tipo: IDENTIFICADOR
-11	Token: <		Tipo: OP_RELACIONAL
-12	Token: N		Tipo: IDENTIFICADOR
-13	Token: Inicio		Tipo: INICIO
-14	Token: Leer		Tipo: LEER
-15	Token: Calificacion		Tipo: IDENTIFICADOR
-16	Token: Prom		Tipo: IDENTIFICADOR
-17	Token: =		Tipo: EQUALS
-18	Token: Prom		Tipo: IDENTIFICADOR
-19	Token: +		Tipo: OPERATOR
-20	Token: Calificacion		Tipo: IDENTIFICADOR
-21	Token: I		Tipo: IDENTIFICADOR
-22	Token: =		Tipo: EQUALS
-23	Token: I		Tipo: IDENTIFICADOR
-24	Token: +		Tipo: OPERATOR
-25	Token: 1.0		Tipo: FLOAT
-26	Token: repite		Tipo: REPITE
-27	Token: 3.0		Tipo: FLOAT
-28	Token: veces		Tipo: VECES
-29	Token: inicio		Tipo: INICIO
-30	Token: Escribir		Tipo: ESCRIBIR
-31	Token: ORA ORA!		Tipo: STRING
-32	Token: repite		Tipo: REPITE
-33	Token: 2.0		Tipo: FLOAT
-34	Token: veces		Tipo: VECES
-35	Token: inicio		Tipo: INICIO
-36	Token: escribir		Tipo: ESCRIBIR
-37	Token: lol		Tipo: STRING
-38	Token: fin		Tipo: FIN
-39	Token: fin		Tipo: FIN
-40	Token: Fin		Tipo: FIN
-41	Token: Prom		Tipo: IDENTIFICADOR
-42	Token: =		Tipo: EQUALS
-43	Token: Prom		Tipo: IDENTIFICADOR
-44	Token: /		Tipo: OPERATOR
-45	Token: N		Tipo: IDENTIFICADOR
-46	Token: Escribir		Tipo: ESCRIBIR
-47	Token: Prom		Tipo: IDENTIFICADOR
-48	Token: Si		Tipo: SI
-49	Token: Prom		Tipo: IDENTIFICADOR
-50	Token: >=		Tipo: OP_RELACIONAL
-51	Token: 60.0		Tipo: FLOAT
-52	Token: entonces		Tipo: ENTONCES
-53	Token: Inicio		Tipo: INICIO
-54	Token: Escribir		Tipo: ESCRIBIR
-55	Token: Aprobado!		Tipo: STRING
-56	Token: Fin		Tipo: FIN
-57	Token: Escribir		Tipo: ESCRIBIR
-58	Token: Fin		Tipo: STRING
-59	Token: Fin-de-programa		Tipo: FINPROG
+1	Token: repite		Tipo: REPITE
+2	Token: 3.0		Tipo: FLOAT
+3	Token: veces		Tipo: VECES
+4	Token: inicio		Tipo: INICIO
+5	Token: Escribir		Tipo: ESCRIBIR
+6	Token: ORA ORA!		Tipo: STRING
+7	Token: repite		Tipo: REPITE
+8	Token: 2.0		Tipo: FLOAT
+9	Token: veces		Tipo: VECES
+10	Token: inicio		Tipo: INICIO
+11	Token: Escribir		Tipo: ESCRIBIR
+12	Token: ya!		Tipo: STRING
+13	Token: fin		Tipo: FIN
+14	Token: fin		Tipo: FIN
+15	Token: Fin-de-programa		Tipo: FINPROG
+0	Token: Inicio-de-programa		Tipo: INICIOPROG
+1	Token: repite		Tipo: REPITE
+2	Token: 3.0		Tipo: FLOAT
+3	Token: veces		Tipo: VECES
+4	Token: inicio		Tipo: INICIO
+5	Token: Escribir		Tipo: ESCRIBIR
+6	Token: ORA ORA!\n		Tipo: STRING
+7	Token: repite		Tipo: REPITE
+8	Token: 2.0		Tipo: FLOAT
+9	Token: veces		Tipo: VECES
+10	Token: inicio		Tipo: INICIO
+11	Token: Escribir		Tipo: ESCRIBIR
+12	Token: ya!		Tipo: STRING
+13	Token: fin		Tipo: FIN
+14	Token: fin		Tipo: FIN
+15	Token: Fin-de-programa		Tipo: FINPROG

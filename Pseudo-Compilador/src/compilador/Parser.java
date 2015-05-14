@@ -31,7 +31,7 @@ public class Parser implements TokenInfo {
 	private int labelIndex = 0;
 	private int brinco = 0;
 	//-----------Contador Repite-----------
-	private int repiteCnt = 0;
+	List<Integer> repiteCntArray = new ArrayList<Integer>();
 	
 	public Parser (List<Token> tokens) {
 		this.tokens = tokens;
@@ -239,31 +239,32 @@ public class Parser implements TokenInfo {
 	
 	private boolean repite(){
 		int brincoAux;
-		int veces;
 		aux = pos;
+//		int index;
 		if(getType(pos++).equals(TokenType.REPITE)) {
 			if(getType(pos).equals(TokenType.IDENTIFICADOR) || getType(pos).equals(TokenType.FLOAT)) {
 				pos++;
 				if(getType(pos++).equals(TokenType.VECES)){
 					if(getType(pos - 2).equals(TokenType.IDENTIFICADOR)){
-						veces = (int)(new ExpresionVariable(tokens.get(pos - 2).getText()).evaluar().toNumber()); 
 						sentencias.add(new SentenciaRepite(new ExpresionVariable(tokens.get(pos - 2).getText()),"Fin"+brinco++));
 						brincoAux = brinco - 1;
+						if (bloque()){						
+//							sentencias.add(new SentenciaCheckRepite("Inicio"+(brincoAux), repiteCntArray.size()-1));
+							sentencias.add(new SentenciaCheckRepite("Inicio"+(brincoAux)));
+							return true;
+						}
 					}
 						
 					else{
-						veces = (int)(new ValorNumerico(Float.parseFloat(tokens.get(pos - 2).getText())).evaluar().toNumber()); 
 						sentencias.add(new SentenciaRepite(new ValorNumerico(Float.parseFloat(tokens.get(pos - 2).getText())),"Fin"+brinco++));
 						brincoAux = brinco - 1;
-					}
-					
-					if (bloque()){
-						veces--;
-						sentencias.add(new SentenciaCheckRepite("Inicio"+(brincoAux)));
-						return true;
-					}
-					
-				}
+						if (bloque()){						
+//							sentencias.add(new SentenciaCheckRepite("Inicio"+(brincoAux), repiteCntArray.size()-1));
+							sentencias.add(new SentenciaCheckRepite("Inicio"+(brincoAux)));
+							return true;
+						}
+					}					
+				} 
 					
 			}
 		}
@@ -460,8 +461,11 @@ public class Parser implements TokenInfo {
 					sentenciaActual=etiquetas.get(label).intValue();
 				}
 				else{
-					setRepiteCnt((int)valor);
-					System.out.println("Repite "+(int)valor+" veces.");
+					repiteCntArray.add((int) valor);
+					System.out.println("Repite "+(int)valor+" veces.\nArray Size: "+repiteCntArray.size());
+					for (Integer number : repiteCntArray) {
+						   System.out.println("Number = " + number);
+					}  
 				}										
 			}
 			
@@ -471,21 +475,26 @@ public class Parser implements TokenInfo {
 	public class SentenciaCheckRepite implements Sentencia {
 		
 		private final String label;
+//		private final int index;
 		
 		public SentenciaCheckRepite (String label) {
 			this.label = label;
+//			this.index=index;
 		}
 		@Override
 		public void ejecutar() {
 			if(etiquetas.containsKey(label)){
-				if(getRepiteCnt() > 1){
+				int index = repiteCntArray.size()-1;
+				if(repiteCntArray.get(index) > 1){
 					System.out.println("Repite...");
 					sentenciaActual=etiquetas.get(label).intValue();
-					repiteCnt--;
-				}	
+					repiteCntArray.set(index, (repiteCntArray.get(index)-1));
+					System.out.println("decrementa array["+index+"]:  " +repiteCntArray.get(index));
+				}
 				else{
 					System.out.println("Fin de ciclo repeat");
-					setRepiteCnt(0);
+					repiteCntArray.remove(index);
+					print(""+repiteCntArray.size());
 				}
 					
 			}
@@ -621,14 +630,6 @@ public class Parser implements TokenInfo {
 //------------obtener Sentencia actual----------
 	public int getSentenciaActual(){
 		return sentenciaActual;
-	}
-//------------Contador Repite	
-	public int getRepiteCnt() {
-		return repiteCnt;
-	}
-
-	public void setRepiteCnt(int repiteCnt) {
-		this.repiteCnt = repiteCnt;
 	}
 //------------Interpretar------------
 	public void interpretar () {
