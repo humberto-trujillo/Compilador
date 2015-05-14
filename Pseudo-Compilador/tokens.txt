@@ -1,16 +1,3 @@
-70.0
-Aprobado!
-anidado si
-Fin
-ORA ORA!
-ORA ORA!
-ORA ORA!
-Numero total de variables: 4
-
-Var: N -> Valor: 1.0
-Var: Prom -> Valor: 70.0
-Var: I -> Valor: 1.0
-Var: Calificacion -> Valor: 70.0
 0	Token: Inicio-de-programa		Tipo: INICIOPROG
 1	Token: Leer		Tipo: LEER
 2	Token: N		Tipo: IDENTIFICADOR
@@ -53,33 +40,16 @@ Var: Calificacion -> Valor: 70.0
 39	Token: Inicio		Tipo: INICIO
 40	Token: Escribir		Tipo: ESCRIBIR
 41	Token: Aprobado!		Tipo: STRING
-42	Token: si		Tipo: SI
-43	Token: 0.0		Tipo: FLOAT
-44	Token: >		Tipo: OP_RELACIONAL
-45	Token: 0.0		Tipo: FLOAT
-46	Token: entonces		Tipo: ENTONCES
-47	Token: Inicio		Tipo: INICIO
-48	Token: Escribir		Tipo: ESCRIBIR
-49	Token: anidado si		Tipo: STRING
-50	Token: Fin		Tipo: FIN
-51	Token: sino		Tipo: SINO
-52	Token: inicio		Tipo: INICIO
-53	Token: escribir		Tipo: ESCRIBIR
-54	Token: anidado 2		Tipo: STRING
-55	Token: fin		Tipo: FIN
-56	Token: Fin		Tipo: FIN
-57	Token: sino		Tipo: SINO
-58	Token: Inicio		Tipo: INICIO
-59	Token: Escribir		Tipo: ESCRIBIR
-60	Token: Reprobado!		Tipo: STRING
-61	Token: Fin		Tipo: FIN
-62	Token: Escribir		Tipo: ESCRIBIR
-63	Token: Fin		Tipo: STRING
-64	Token: repite		Tipo: REPITE
-65	Token: 3.0		Tipo: FLOAT
-66	Token: veces		Tipo: VECES
-67	Token: inicio		Tipo: INICIO
-68	Token: Escribir		Tipo: ESCRIBIR
-69	Token: ORA ORA!		Tipo: STRING
-70	Token: fin		Tipo: FIN
-71	Token: Fin-de-programa		Tipo: FINPROG
+42	Token: Fin		Tipo: FIN
+43	Token: Escribir		Tipo: ESCRIBIR
+44	Token: Fin		Tipo: STRING
+45	Token: repite		Tipo: REPITE
+46	Token: 3.0		Tipo: FLOAT
+47	Token: veces		Tipo: VECES
+48	Token: inicio		Tipo: INICIO
+49	Token: Escribir		Tipo: ESCRIBIR
+50	Token: ORA ORA!		Tipo: STRING
+51	Token: fin		Tipo: FIN
+52	Token: Fin-de-programa		Tipo: FINPROG
+
+Veredicto final del parser: true

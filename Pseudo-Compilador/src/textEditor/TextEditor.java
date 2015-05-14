@@ -39,7 +39,6 @@ import compilador.Valor;
 
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
-import java.awt.Button;
 import javax.swing.ImageIcon;
 
 public class TextEditor {
@@ -235,39 +234,14 @@ public class TextEditor {
 		frmEditorDePseudocdigo.getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 		
-		tokenizeButton = new JButton("Parse!");
-		tokenizeButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Boolean b;
-				List<Token> tokens = Lexer.tokenize(editPane.getText() + "\n");
-				for(int i = 0; i < tokens.size(); i++) {
-		            //System.out.println(i+"	Token: "+tokens.get(i).getText()+ "		Tipo: "+tokens.get(i).getToken());
-					textArea.append(i+"	Token: "+tokens.get(i).getText()+ 
-							"		Tipo: "+tokens.get(i).getToken() + "\n");
-					
-		        }
-				parser = new Parser(tokens);
-				b =  parser.programa();
-				System.out.println("Veredicto final del parser: " + b.toString());
-				if(b)
-					Mensajes.despliegaMensaje("Enhorabuena!", "No se encontraron errores de sintaxis!");
-				else
-					Mensajes.despliegaError("Hubo errores de sintaxis!");
-				
-				
-				BufferedWriter writer;
-			    try {
-			        writer = new BufferedWriter(new FileWriter(new File("tokens.txt")));
-			        writer.write(textArea.getText());
-			        writer.close();
-			    }
-			    catch (IOException ioe) {
-			        editPane.setText("No se puede guardar el archivo!");
-			    }
-			}
-		});
-		tokenizeButton.setBounds(6, 11, 105, 29);
-		panel.add(tokenizeButton);
+//		tokenizeButton = new JButton("Parse!");
+//		tokenizeButton.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				parsear();
+//			}
+//		});
+//		tokenizeButton.setBounds(6, 11, 105, 29);
+//		panel.add(tokenizeButton);
 		
 		jScrollPane1 = new JScrollPane();
 		jScrollPane1.setBounds(6, 52, 560, 380);
@@ -284,36 +258,83 @@ public class TextEditor {
 		textArea.setEditable(false);
 		jScrollPane2.setViewportView(textArea);
 		
-		JButton btnEjecutar = new JButton("Ejecutar");
-		btnEjecutar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(parser == null){
-					textArea.setText("Se Necesita parsear instrucciones\n");
-					return;
-				}
-				textArea.setText("");
-				parser.interpretar();
-				
-				Map<String, Valor> variables = parser.getVariables();
-				System.out.println("Numero total de variables: "+variables.size());
-				textArea.append("Numero total de variables: "+variables.size()+"\n\n");
-				Iterator<String> it = variables.keySet().iterator();
-				
-				while(it.hasNext()){
-				  String key = it.next();
-				  System.out.println("Var: " + key + " -> Valor: " + variables.get(key));
-				  textArea.append("Var: " + key + " -> Valor: " + variables.get(key)+"\n");
-				}
-				
-			}
-		});
-		btnEjecutar.setBounds(123, 11, 117, 29);
-		panel.add(btnEjecutar);
+//		JButton btnEjecutar = new JButton("Ejecutar");
+//		btnEjecutar.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				ejecutar();
+//			}
+//		});
+//		btnEjecutar.setBounds(123, 11, 117, 29);
+//		panel.add(btnEjecutar);
 		
 		JToolBar toolBar = new JToolBar();
 		frmEditorDePseudocdigo.getContentPane().add(toolBar, BorderLayout.NORTH);
 		
-		JButton btnNewButton = new JButton("New button");
-		toolBar.add(btnNewButton);
+		JButton compilar = new JButton("");
+		compilar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				parsear();
+			}
+		});
+		compilar.setIcon(new ImageIcon(TextEditor.class.getResource("/icons/compfileIcon.png")));
+		toolBar.add(compilar);
+		
+		JButton correr = new JButton("");
+		correr.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ejecutar();
+			}
+		});
+		correr.setIcon(new ImageIcon(TextEditor.class.getResource("/icons/runIcon.png")));
+		toolBar.add(correr);
+	}
+	
+	private void parsear(){
+		Boolean b;
+		List<Token> tokens = Lexer.tokenize(editPane.getText() + "\n");
+		for(int i = 0; i < tokens.size(); i++) {
+			textArea.append(i+"	Token: "+tokens.get(i).getText()+ 
+					"		Tipo: "+tokens.get(i).getToken() + "\n");
+        }
+		parser = new Parser(tokens);
+		b =  parser.programa();
+		System.out.println("Veredicto final del parser: " + b.toString());
+		textArea.append("\nVeredicto final del parser: " + b.toString());
+		
+		if(b)
+			Mensajes.despliegaMensaje("Enhorabuena!", "No se encontraron errores de sintaxis!");
+		else
+			Mensajes.despliegaError("Hubo errores de sintaxis!");
+		
+		
+		BufferedWriter writer;
+	    try {
+	        writer = new BufferedWriter(new FileWriter(new File("tokens.txt")));
+	        writer.write(textArea.getText());
+	        writer.close();
+	    }
+	    catch (IOException ioe) {
+	        editPane.setText("No se puede guardar el archivo!");
+	    }
+	}
+	
+	private void ejecutar(){
+		if(parser == null){
+			textArea.setText("Se Necesita parsear (compilar) el código \n");
+			return;
+		}
+		textArea.setText("");
+		parser.interpretar();
+		
+		Map<String, Valor> variables = parser.getVariables();
+		System.out.println("Numero total de variables: "+variables.size());
+		textArea.append("Numero total de variables: "+variables.size()+"\n\n");
+		Iterator<String> it = variables.keySet().iterator();
+		
+		while(it.hasNext()){
+		  String key = it.next();
+		  System.out.println("Var: " + key + " -> Valor: " + variables.get(key));
+		  textArea.append("Var: " + key + " -> Valor: " + variables.get(key)+"\n");
+		}
 	}
 }
