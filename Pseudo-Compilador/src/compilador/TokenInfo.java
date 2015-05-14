@@ -7,7 +7,7 @@ public interface TokenInfo {
 	        EQUALS, OPERATOR, EOF, 
 	        INICIOPROG, FINPROG, OP_RELACIONAL,
 	        IDENTIFICADOR, LEER, ESCRIBIR, SI,
-	        ENTONCES, MIENTRAS, INICIO, FIN, REPITE, VECES
+	        ENTONCES, MIENTRAS, INICIO, FIN, REPITE, VECES, SINO
 	    }
 	 
 	 enum TokenizeState {

@@ -1,43 +1,85 @@
+70.0
+Aprobado!
+anidado si
+Fin
 ORA ORA!
-ya!
-ya!
 ORA ORA!
-ya!
-ya!
 ORA ORA!
-ya!
-ya!
-Numero total de variables: 0
+Numero total de variables: 4
 
+Var: N -> Valor: 1.0
+Var: Prom -> Valor: 70.0
+Var: I -> Valor: 1.0
+Var: Calificacion -> Valor: 70.0
 0	Token: Inicio-de-programa		Tipo: INICIOPROG
-1	Token: repite		Tipo: REPITE
-2	Token: 3.0		Tipo: FLOAT
-3	Token: veces		Tipo: VECES
-4	Token: inicio		Tipo: INICIO
-5	Token: Escribir		Tipo: ESCRIBIR
-6	Token: ORA ORA!		Tipo: STRING
-7	Token: repite		Tipo: REPITE
-8	Token: 2.0		Tipo: FLOAT
-9	Token: veces		Tipo: VECES
-10	Token: inicio		Tipo: INICIO
-11	Token: Escribir		Tipo: ESCRIBIR
-12	Token: ya!		Tipo: STRING
-13	Token: fin		Tipo: FIN
-14	Token: fin		Tipo: FIN
-15	Token: Fin-de-programa		Tipo: FINPROG
-0	Token: Inicio-de-programa		Tipo: INICIOPROG
-1	Token: repite		Tipo: REPITE
-2	Token: 3.0		Tipo: FLOAT
-3	Token: veces		Tipo: VECES
-4	Token: inicio		Tipo: INICIO
-5	Token: Escribir		Tipo: ESCRIBIR
-6	Token: ORA ORA!\n		Tipo: STRING
-7	Token: repite		Tipo: REPITE
-8	Token: 2.0		Tipo: FLOAT
-9	Token: veces		Tipo: VECES
-10	Token: inicio		Tipo: INICIO
-11	Token: Escribir		Tipo: ESCRIBIR
-12	Token: ya!		Tipo: STRING
-13	Token: fin		Tipo: FIN
-14	Token: fin		Tipo: FIN
-15	Token: Fin-de-programa		Tipo: FINPROG
+1	Token: Leer		Tipo: LEER
+2	Token: N		Tipo: IDENTIFICADOR
+3	Token: Prom		Tipo: IDENTIFICADOR
+4	Token: =		Tipo: EQUALS
+5	Token: 0.0		Tipo: FLOAT
+6	Token: I		Tipo: IDENTIFICADOR
+7	Token: =		Tipo: EQUALS
+8	Token: 0.0		Tipo: FLOAT
+9	Token: Mientras		Tipo: MIENTRAS
+10	Token: I		Tipo: IDENTIFICADOR
+11	Token: <		Tipo: OP_RELACIONAL
+12	Token: N		Tipo: IDENTIFICADOR
+13	Token: Inicio		Tipo: INICIO
+14	Token: Leer		Tipo: LEER
+15	Token: Calificacion		Tipo: IDENTIFICADOR
+16	Token: Prom		Tipo: IDENTIFICADOR
+17	Token: =		Tipo: EQUALS
+18	Token: Prom		Tipo: IDENTIFICADOR
+19	Token: +		Tipo: OPERATOR
+20	Token: Calificacion		Tipo: IDENTIFICADOR
+21	Token: I		Tipo: IDENTIFICADOR
+22	Token: =		Tipo: EQUALS
+23	Token: I		Tipo: IDENTIFICADOR
+24	Token: +		Tipo: OPERATOR
+25	Token: 1.0		Tipo: FLOAT
+26	Token: Fin		Tipo: FIN
+27	Token: Prom		Tipo: IDENTIFICADOR
+28	Token: =		Tipo: EQUALS
+29	Token: Prom		Tipo: IDENTIFICADOR
+30	Token: /		Tipo: OPERATOR
+31	Token: N		Tipo: IDENTIFICADOR
+32	Token: Escribir		Tipo: ESCRIBIR
+33	Token: Prom		Tipo: IDENTIFICADOR
+34	Token: Si		Tipo: SI
+35	Token: Prom		Tipo: IDENTIFICADOR
+36	Token: >=		Tipo: OP_RELACIONAL
+37	Token: 60.0		Tipo: FLOAT
+38	Token: entonces		Tipo: ENTONCES
+39	Token: Inicio		Tipo: INICIO
+40	Token: Escribir		Tipo: ESCRIBIR
+41	Token: Aprobado!		Tipo: STRING
+42	Token: si		Tipo: SI
+43	Token: 0.0		Tipo: FLOAT
+44	Token: >		Tipo: OP_RELACIONAL
+45	Token: 0.0		Tipo: FLOAT
+46	Token: entonces		Tipo: ENTONCES
+47	Token: Inicio		Tipo: INICIO
+48	Token: Escribir		Tipo: ESCRIBIR
+49	Token: anidado si		Tipo: STRING
+50	Token: Fin		Tipo: FIN
+51	Token: sino		Tipo: SINO
+52	Token: inicio		Tipo: INICIO
+53	Token: escribir		Tipo: ESCRIBIR
+54	Token: anidado 2		Tipo: STRING
+55	Token: fin		Tipo: FIN
+56	Token: Fin		Tipo: FIN
+57	Token: sino		Tipo: SINO
+58	Token: Inicio		Tipo: INICIO
+59	Token: Escribir		Tipo: ESCRIBIR
+60	Token: Reprobado!		Tipo: STRING
+61	Token: Fin		Tipo: FIN
+62	Token: Escribir		Tipo: ESCRIBIR
+63	Token: Fin		Tipo: STRING
+64	Token: repite		Tipo: REPITE
+65	Token: 3.0		Tipo: FLOAT
+66	Token: veces		Tipo: VECES
+67	Token: inicio		Tipo: INICIO
+68	Token: Escribir		Tipo: ESCRIBIR
+69	Token: ORA ORA!		Tipo: STRING
+70	Token: fin		Tipo: FIN
+71	Token: Fin-de-programa		Tipo: FINPROG

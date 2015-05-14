@@ -32,6 +32,8 @@ public class Parser implements TokenInfo {
 	private int brinco = 0;
 	//-----------Contador Repite-----------
 	List<Integer> repiteCntArray = new ArrayList<Integer>();
+	//-----------banderas de SINO
+	List<Boolean> banderasIf = new ArrayList<Boolean>();
 	
 	public Parser (List<Token> tokens) {
 		this.tokens = tokens;
@@ -91,6 +93,8 @@ public class Parser implements TokenInfo {
 		if(asignacion())
 			return true;
 		if(si())
+			return true;
+		if(sino())
 			return true;
 		if(repite())
 			return true;
@@ -240,7 +244,6 @@ public class Parser implements TokenInfo {
 	private boolean repite(){
 		int brincoAux;
 		aux = pos;
-//		int index;
 		if(getType(pos++).equals(TokenType.REPITE)) {
 			if(getType(pos).equals(TokenType.IDENTIFICADOR) || getType(pos).equals(TokenType.FLOAT)) {
 				pos++;
@@ -249,7 +252,6 @@ public class Parser implements TokenInfo {
 						sentencias.add(new SentenciaRepite(new ExpresionVariable(tokens.get(pos - 2).getText()),"Fin"+brinco++));
 						brincoAux = brinco - 1;
 						if (bloque()){						
-//							sentencias.add(new SentenciaCheckRepite("Inicio"+(brincoAux), repiteCntArray.size()-1));
 							sentencias.add(new SentenciaCheckRepite("Inicio"+(brincoAux)));
 							return true;
 						}
@@ -259,7 +261,6 @@ public class Parser implements TokenInfo {
 						sentencias.add(new SentenciaRepite(new ValorNumerico(Float.parseFloat(tokens.get(pos - 2).getText())),"Fin"+brinco++));
 						brincoAux = brinco - 1;
 						if (bloque()){						
-//							sentencias.add(new SentenciaCheckRepite("Inicio"+(brincoAux), repiteCntArray.size()-1));
 							sentencias.add(new SentenciaCheckRepite("Inicio"+(brincoAux)));
 							return true;
 						}
@@ -306,6 +307,18 @@ public class Parser implements TokenInfo {
 					}
 			}
 			
+		}
+		pos = aux;
+		return false;
+	}
+	
+	private boolean sino(){
+		aux = pos;
+		if(getType(pos++).equals(TokenType.SINO)) {
+			sentencias.add(new SentenciaSiNo("Fin"+brinco++));
+			if(bloque()){
+				return true;
+			}
 		}
 		pos = aux;
 		return false;
@@ -381,22 +394,55 @@ public class Parser implements TokenInfo {
 	
 	public class SentenciaSi implements Sentencia {
 		private final Expresion expresion;
+		private final String labelNo;
+		
+		public SentenciaSi (Expresion expresion, String labelNo) {
+			this.expresion = expresion;
+			this.labelNo = labelNo;
+		}
+		@Override
+		public void ejecutar() {
+			if(etiquetas.containsKey(labelNo)){
+				float valor = expresion.evaluar().toNumber();
+				if (valor != 1){
+					System.out.println("False");
+					sentenciaActual=etiquetas.get(labelNo).intValue();
+					banderasIf.add(false);
+				}
+				else{
+					System.out.println("True");
+					banderasIf.add(true);
+				}
+					
+			}
+		}		
+	}
+	
+	public class SentenciaSiNo implements Sentencia {
+
 		private final String label;
 		
-		public SentenciaSi (Expresion expresion, String label) {
-			this.expresion = expresion;
+		public SentenciaSiNo (String label) {
+
 			this.label = label;
 		}
 		@Override
 		public void ejecutar() {
 			if(etiquetas.containsKey(label)){
-				float valor = expresion.evaluar().toNumber();
-				if (valor != 1){
-					System.out.println("False");
+				
+				int index = banderasIf.size()-1;
+				
+				if(banderasIf.get(index)){
+					
+					System.out.println("Condicion cumplida!");
 					sentenciaActual=etiquetas.get(label).intValue();
+
 				}
-				else
-					System.out.println("True");
+				else{
+					System.out.println("Entra en bloque SINO");
+					banderasIf.remove(index);
+					print(""+banderasIf.size());
+				}	
 			}
 		}		
 	}
@@ -475,11 +521,9 @@ public class Parser implements TokenInfo {
 	public class SentenciaCheckRepite implements Sentencia {
 		
 		private final String label;
-//		private final int index;
 		
 		public SentenciaCheckRepite (String label) {
 			this.label = label;
-//			this.index=index;
 		}
 		@Override
 		public void ejecutar() {

@@ -58,11 +58,11 @@ public class Lexer implements TokenInfo{
         // Arreglo de palabras reserverdas del pseudocodigo
         String[] stringTokens = {"INICIO-DE-PROGRAMA", "FIN-DE-PROGRAMA",
                 "LEER", "ESCRIBIR", "SI", "ENTONCES", "MIENTRAS", 
-                "INICIO", "FIN", "REPITE", "VECES"};
+                "INICIO", "FIN", "REPITE", "VECES", "SINO"};
     
         TokenType[] stringTokenTypes = {TokenType.INICIOPROG, TokenType.FINPROG,
         		TokenType.LEER, TokenType.ESCRIBIR, TokenType.SI, TokenType.ENTONCES, TokenType.MIENTRAS,
-        		TokenType.INICIO, TokenType.FIN, TokenType.REPITE, TokenType.VECES};
+        		TokenType.INICIO, TokenType.FIN, TokenType.REPITE, TokenType.VECES, TokenType.SINO};
         // Scan through the code one character at a time, building up the list
         // of tokens.
         for (int i = 0; i < source.length(); i++) {
