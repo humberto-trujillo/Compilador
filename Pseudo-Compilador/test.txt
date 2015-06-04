@@ -1,11 +1,15 @@
 @comentario
 Inicio-de-programa
 	Prom = 0.0
-	I = 0.0
-	Repite 3.0 veces
+	I = 1.0
+	Si Prom > 60.0 entonces
 		Inicio
 			Prom = Prom + 1.0
 			I = I + 1.0
+		Fin
+	Sino
+		Inicio
+			Prom = Prom + I
 		Fin
 	Escribir "Fin"
 Fin-de-programa

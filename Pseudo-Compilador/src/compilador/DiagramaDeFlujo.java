@@ -48,7 +48,7 @@ public class DiagramaDeFlujo extends JFrame {
 			procesoW = 152, procesoH = 88, flecha_abajoW = 12, flecha_abajoH = 44,
 			flechaW = 44, flechaH = 12, linea_horizontalW = 32, linea_horizontalH = 2, 
 			linea_verticalW = 2, linea_verticalH = 32;
-	private int mainX, mainY, _mainX, _mainY;
+	private int mainX, mainY, _mainX, _mainY, sinoY;
 	private int sentenciaActual = 0, _sentenciaActual;
 //	private int iProceso, iDecision, iEscribir, iLeer, iFlecha_abajo, iFlecha_izquierda, iFlecha_derecha,
 //				iLinea_vertical, iLinea_horizontal;
@@ -115,15 +115,12 @@ public class DiagramaDeFlujo extends JFrame {
 		
 		if(sentencia instanceof SentenciaSi) {			
 			sentenciasBloque.add(sentenciaActual);
-			print(sentenciasBloque);
 			List<Sentencia> _sentencias = new ArrayList<Sentencia>();
 			int n  = etiquetas.get("Fin" + (sentenciasBloque.size() - 1)) - 
 					etiquetas.get("Inicio" + (sentenciasBloque.size() - 1));
 			for(int i = 1; i <= n; i++) {
 				_sentencias.add(sentencias.get(sentenciaActual + i));
 			}
-			print(_sentencias.size());
-			print("Valor de n: " + n);
 			dibujaSi(((ExpresionOperador)((SentenciaSi) sentencia).expresion).izquierda.toString(),
 					((ExpresionOperador)((SentenciaSi) sentencia).expresion).operador, 
 					((ExpresionOperador)((SentenciaSi) sentencia).expresion).derecha.toString(), _sentencias);
@@ -131,9 +128,17 @@ public class DiagramaDeFlujo extends JFrame {
 			sentenciaActual += n;
 		}
 		
-//		else if(sentencia instanceof SentenciaSiNo) {
-//			
-//		}
+		if(sentencia instanceof SentenciaSiNo) {
+			sentenciasBloque.add(sentenciaActual);
+			List<Sentencia> _sentencias = new ArrayList<Sentencia>();
+			int n  = etiquetas.get("Fin" + (sentenciasBloque.size() - 1)) - 
+					etiquetas.get("Inicio" + (sentenciasBloque.size() - 1));
+			for(int i = 1; i <= n; i++) {
+				_sentencias.add(sentencias.get(sentenciaActual + i));
+			}
+			dibujaSiNo(_sentencias);
+			sentenciaActual += n;
+		}
 		
 		if(sentencia instanceof SentenciaMientras) {
 			sentenciasBloque.add(sentenciaActual);
@@ -217,6 +222,7 @@ public class DiagramaDeFlujo extends JFrame {
 		int yD = mainY + (decisionH / 2) + 5;
 		g2.drawImage(decision, xD, mainY, null);
 		g2.drawString(valor1 + " " + simbolo + " " + valor2, xD + 50, mainY + (escribirH / 2 - 6));
+		sinoY = mainY;
 		mainY += decisionH;
 		for(Sentencia s : _sentencias) {
 			dibujaSentencia(s);
@@ -232,8 +238,15 @@ public class DiagramaDeFlujo extends JFrame {
 				linea_verticalH * nY + yD - 5, null);
 	}
 	
-	private void dibujaSiNo() {
-		
+	private void dibujaSiNo(List<Sentencia> _sentencias) {
+		int sinoX = mainX, aux_mainY = mainY;
+		mainY = sinoY + procesoH;
+		mainX += decisionW / 2 + 50; 
+		for(Sentencia s : _sentencias) {
+			dibujaSentencia(s);
+		}
+		mainX = sinoX;
+		mainY = aux_mainY;
 	}
 	
 	private void dibujaMientras(String valor1, String simbolo, String valor2, List<Sentencia> _sentencias) {
@@ -351,11 +364,11 @@ public class DiagramaDeFlujo extends JFrame {
 		ventana = new JPanel();
 		setContentPane(ventana);
 		ventana.setLayout(null);
-		setResizable(false);
+		//setResizable(false);
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBounds(getWidth() - 5, 0, 2, 450);
+		scrollPane.setBounds(0, 0, getWidth(), getHeight());
 		scrollPane.createHorizontalScrollBar();
 		scrollPane.createVerticalScrollBar();
 		ventana.add(scrollPane);
