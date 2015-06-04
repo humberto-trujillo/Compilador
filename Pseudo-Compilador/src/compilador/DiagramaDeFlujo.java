@@ -53,7 +53,7 @@ public class DiagramaDeFlujo extends JFrame {
 //	private int iProceso, iDecision, iEscribir, iLeer, iFlecha_abajo, iFlecha_izquierda, iFlecha_derecha,
 //				iLinea_vertical, iLinea_horizontal;
 	private BufferedImage decision, escribir, leer, proceso, flecha_abajo, flecha_izquierda,
-	 	flecha_derecha, linea_vertical, linea_horizontal;
+	 	flecha_derecha, linea_vertical, linea_horizontal, repite;
 	private BufferedImage fin, inicio;
 	private Image dbImage;
 	private Graphics graficos, g2;
@@ -150,9 +150,19 @@ public class DiagramaDeFlujo extends JFrame {
 			sentenciaActual += n;
 		}
 		
-//		if(sentencia instanceof SentenciaRepite) {
-//			
-//		}
+		if(sentencia instanceof SentenciaRepite) {
+			sentenciasBloque.add(sentenciaActual);
+			List<Sentencia> _sentencias = new ArrayList<Sentencia>();
+			int n  = etiquetas.get("Fin" + (sentenciasBloque.size() - 1)) - 
+					etiquetas.get("Inicio" + (sentenciasBloque.size() - 1));
+			for(int i = 1; i <= n; i++) {
+				_sentencias.add(sentencias.get(sentenciaActual + i));
+			}
+			dibujaRepite(((SentenciaRepite) sentencia).expresion.toString(), _sentencias);
+			
+			sentenciaActual += n;
+		}
+		
 	}
 	
 	private void dibujaSentencia(Sentencia sentencia, int xS, int yS) {
@@ -183,19 +193,7 @@ public class DiagramaDeFlujo extends JFrame {
 				mainY + (procesoH / 2 - 8));
 		mainY += procesoH;
 	}
-	
-	private void dibujaProceso(String variable, String valor, int xP) {
-		g2.drawImage(proceso, xP, mainY, null);
-		g2.drawString(variable + " = " + valor, xP + 30, mainY + (procesoH / 2 - 8));
-		mainY += procesoH;
-	}
-	
-	private void dibujaProceso(String variable, String valor1, String signo, String valor2, int xP) {
-		g2.drawImage(proceso, xP, mainY, null);
-		g2.drawString(variable + " = " + valor1 + " " + signo + " " + valor2, xP + 15, 
-				mainY + (procesoH / 2 - 8));
-		mainY += procesoH;
-	}
+
 	
 	private void dibujaEscribir(String cadena) {
 		int xE = mainX - (inicioW / 4) - 4;
@@ -204,12 +202,7 @@ public class DiagramaDeFlujo extends JFrame {
 		mainY += escribirH;
 	}
 	
-	private void dibujaEscribir(String cadena, int xE) {
-		//int xE = mainX - (inicioW / 4) - 4;
-		g2.drawImage(escribir, xE, mainY, null);
-		g2.drawString("Escribe " + cadena, xE + 15, mainY + (escribirH / 2 - 16));
-		mainY += escribirH;
-	}
+
 	
 	private void dibujaLeer(String variable) {
 		int xL = mainX - (inicioW / 3) - 10;
@@ -217,13 +210,7 @@ public class DiagramaDeFlujo extends JFrame {
 		g2.drawString("Leer " + variable, xL + 40, mainY + (escribirH / 2 - 16));
 		mainY += leerH;
 	}
-	
-	private void dibujaLeer(String variable, int xL) {
-		//int xL = mainX - (inicioW / 3) - 10;
-		g2.drawImage(leer, xL, mainY, null);
-		g2.drawString("Leer " + variable, xL + 40, mainY + (escribirH / 2 - 16));
-		mainY += leerH;
-	}
+
 	
 	private void dibujaSi(String valor1, String simbolo, String valor2, List<Sentencia> _sentencias) {
 		int xD = mainX - (inicioW / 3) - 28;
@@ -288,8 +275,43 @@ public class DiagramaDeFlujo extends JFrame {
 				_yD - 20, null);
 	}
 	
-	private void dibujaRepite() {
-		
+	private void dibujaRepite(String valor, List<Sentencia> _sentencias) {
+		int xD = mainX - (inicioW / 3) - 28;
+		int yD = mainY + (decisionH / 2) + 5;
+		int _yD = mainY;
+		g2.drawImage(repite, xD, mainY - 4, null);
+		g2.drawString("Repite", xD + 80, mainY + (escribirH / 2 - 18));
+		g2.drawString(valor + " " + "veces", xD + 70, mainY + (escribirH / 2 - 6));
+		mainY += decisionH;
+		for(Sentencia s : _sentencias) {
+			dibujaSentencia(s);
+		}
+		int nX = (xD + decisionW - 5 - mainX - inicioW / 2) / linea_horizontalW - 1;
+		int nY = _sentencias.size() * 100 / (linea_verticalH) + 1;
+		print("nx: " + nX );
+		for(int i = 0; i < nY; i++) {
+			g2.drawImage(linea_vertical, xD + decisionW - 10, linea_verticalH * i + yD, null);
+			g2.drawImage(linea_vertical, xD - linea_horizontalW * (nX ) + decisionW / 3, 
+					linea_verticalH * i + yD - 15, null);
+			if(i == nY - 1) {
+				g2.drawImage(linea_vertical, xD - linea_horizontalW * (nX) + decisionW / 3, 
+						_yD - 14, null);
+				g2.drawImage(linea_vertical, xD - linea_horizontalW * (nX) + decisionW / 3, 
+						_yD + 18, null);
+			}
+		}
+		for(int i = 1; i <= nX; i++) {
+			g2.drawImage(linea_horizontal, xD + decisionW - 5 - linea_horizontalW * i, linea_verticalH * nY + yD, null);
+			g2.drawImage(linea_horizontal, xD - linea_horizontalW * i + decisionW / 3, 
+					linea_verticalH * nY + yD - 15, null);
+			if(i != 1)
+				g2.drawImage(linea_horizontal, xD - linea_horizontalW * i + decisionW / 3, 
+					_yD - 14, null);
+		}
+		g2.drawImage(flecha_izquierda, (xD + decisionW - 5 - linea_horizontalW * (nX + 1)), 
+				linea_verticalH * nY + yD - 5, null);
+		g2.drawImage(flecha_derecha, xD + decisionW - 5 - linea_horizontalW * (nX + 3) - 4, 
+				_yD - 20, null);
 	}
 	
 	
@@ -346,7 +368,7 @@ public class DiagramaDeFlujo extends JFrame {
 			escribir = ImageIO.read(DiagramaDeFlujo.class.getResource("/figuras/Escribir.png"));
 			leer = ImageIO.read(DiagramaDeFlujo.class.getResource("/figuras/Leer.png"));
 			proceso = ImageIO.read(DiagramaDeFlujo.class.getResource("/figuras/Proceso.png"));
-			
+			repite = ImageIO.read(DiagramaDeFlujo.class.getResource("/figuras/Repite.png"));
 			//lineas y flechas
 			flecha_abajo = ImageIO.read(DiagramaDeFlujo.class.getResource("/figuras/flecha_abajo.png"));
 			flecha_izquierda = ImageIO.read(DiagramaDeFlujo.class.getResource("/figuras/flecha_izquierda.png"));

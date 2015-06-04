@@ -2,7 +2,7 @@
 Inicio-de-programa
 	Prom = 0.0
 	I = 0.0
-	Mientras Prom < 5.0
+	Repite 3.0 veces
 		Inicio
 			Prom = Prom + 1.0
 			I = I + 1.0
