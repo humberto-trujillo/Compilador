@@ -1,7 +1,10 @@
 @comentario
 Inicio-de-programa
-	Leer N
-	Prom = 1.0
-	I = 0.0
+	Prom = 0.0
+	Si Prom >= 60.0 entonces
+		Inicio
+			Escribir "Aprobado!"
+			Prom = Prom + 1.0
+		Fin
 	Escribir "Fin"
 Fin-de-programa

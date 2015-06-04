@@ -589,12 +589,14 @@ public class Parser implements TokenInfo {
 		public ExpresionVariable(String name) {
 			this.name = name;
 		}
+		
 		public Valor evaluar(){
 			if(variables.containsKey(name)){
 				return variables.get(name);
 			}
 			return new ValorNumerico(0);
 		}
+		
 		@Override
 		public String toString() {
 			return name;
