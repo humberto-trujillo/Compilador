@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import compilador.Parser.ExpresionOperador;
 import compilador.Parser.ExpresionVariable;
@@ -29,7 +30,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.swing.ScrollPaneConstants;
+import javax.swing.JTextField;
 
 public class DiagramaDeFlujo extends JFrame {
 
@@ -38,6 +41,7 @@ public class DiagramaDeFlujo extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private JTextArea ta;
 	private List<Sentencia> sentencias = new ArrayList<Sentencia>();
 	private List<Integer> sentenciasBloque = new ArrayList<Integer>();
 	private List<Integer> _sentenciasBloque = new ArrayList<Integer>();
@@ -342,7 +346,6 @@ public class DiagramaDeFlujo extends JFrame {
 		
 		dbImage = ventana.createImage(getWidth(), getHeight());
 		graficos = dbImage.getGraphics();
-		//paintComponent(graficos);
 		g2 = graficos;
 		generaDiagrama();
 		g.drawImage(dbImage, 0, 0, ventana);
@@ -360,18 +363,22 @@ public class DiagramaDeFlujo extends JFrame {
 	 */
 	private void initialize() {
 		setBounds(200, 10, 700, 700);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ventana = new JPanel();
 		setContentPane(ventana);
-		ventana.setLayout(null);
 		//setResizable(false);
 		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(116, 77, getWidth(), getHeight());
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBounds(0, 0, getWidth(), getHeight());
 		scrollPane.createHorizontalScrollBar();
 		scrollPane.createVerticalScrollBar();
+		ventana.setLayout(null);
 		ventana.add(scrollPane);
+		
+		ta = new JTextArea();
+		ta.setBounds(682, 659, -679, -656);
+		ventana.add(ta);
 		//ventana.setBackground(Color.WHITE);
 		try {
 			//figuras
@@ -395,7 +402,4 @@ public class DiagramaDeFlujo extends JFrame {
 		mainX = (getWidth() / 2) - 65;
 		mainY = 30;
 	}
-	
-	
-
 }

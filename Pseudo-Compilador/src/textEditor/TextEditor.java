@@ -306,7 +306,7 @@ public class TextEditor {
 			}
 		});
 		diagrama.setIcon(new ImageIcon(TextEditor.class.getResource("/icons/diagrama.png")));
-		//diagrama.setEnabled(false);
+		diagrama.setEnabled(false);
 		toolBar.add(diagrama);
 	}
 	

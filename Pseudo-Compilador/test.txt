@@ -1,15 +1,11 @@
 @comentario
 Inicio-de-programa
+	Leer N
 	Prom = 0.0
-	I = 1.0
-	Si Prom > 60.0 entonces
+	I = 0.0
+	Mientras I < N
 		Inicio
-			Prom = Prom + 1.0
+			Prom = Prom + Calificacion
 			I = I + 1.0
 		Fin
-	Sino
-		Inicio
-			Prom = Prom + I
-		Fin
-	Escribir "Fin"
 Fin-de-programa
