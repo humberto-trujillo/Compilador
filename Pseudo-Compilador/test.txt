@@ -1,23 +1,7 @@
 @comentario
 Inicio-de-programa
 	Leer N
-	Prom = 0.0
+	Prom = 1.0
 	I = 0.0
-	Mientras I < N
-		Inicio
-			Leer Calificacion
-			Prom = Prom + Calificacion
-			I = I + 1.0
-		Fin
-	Prom = Prom / N
-	Escribir Prom
-	Si Prom >= 60.0 entonces
-		Inicio
-			Escribir "Aprobado!"
-		Fin
 	Escribir "Fin"
-	repite 3.0 veces
-		inicio
-			Escribir "ORA ORA!"
-		fin	
 Fin-de-programa

@@ -27,14 +27,18 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import compilador.DiagramaDeFlujo;
 import compilador.Lexer;
 import compilador.Lexer.Token;
 import compilador.Mensajes;
 import compilador.Parser;
 import compilador.Valor;
+
+
 
 
 import javax.swing.JTextArea;
@@ -65,6 +69,8 @@ public class TextEditor {
 	private File fileName = new File("noname.txt");
 	public static JTextArea textArea;
 	private Parser parser;
+	private DiagramaDeFlujo diagramaDeFlujo;
+	private JButton diagrama;
 	/**
 	 * Launch the application.
 	 */
@@ -282,11 +288,26 @@ public class TextEditor {
 		JButton correr = new JButton("");
 		correr.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if(parser == null){
+					textArea.setText("Se Necesita parsear (compilar) el código \n");
+					return;
+				}
 				ejecutar();
+				diagrama.setEnabled(true);
 			}
 		});
 		correr.setIcon(new ImageIcon(TextEditor.class.getResource("/icons/runIcon.png")));
 		toolBar.add(correr);
+		
+		diagrama = new JButton("");
+		diagrama.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				generaDiagrama();
+			}
+		});
+		diagrama.setIcon(new ImageIcon(TextEditor.class.getResource("/icons/diagrama.png")));
+		//diagrama.setEnabled(false);
+		toolBar.add(diagrama);
 	}
 	
 	private void parsear(){
@@ -319,14 +340,12 @@ public class TextEditor {
 	}
 	
 	private void ejecutar(){
-		if(parser == null){
-			textArea.setText("Se Necesita parsear (compilar) el código \n");
-			return;
-		}
+
 		textArea.setText("");
 		parser.interpretar();
 		
 		Map<String, Valor> variables = parser.getVariables();
+		Map<String, Integer> etiquetas = parser.getEtiquetas();
 		System.out.println("Numero total de variables: "+variables.size());
 		textArea.append("Numero total de variables: "+variables.size()+"\n\n");
 		Iterator<String> it = variables.keySet().iterator();
@@ -336,5 +355,19 @@ public class TextEditor {
 		  System.out.println("Var: " + key + " -> Valor: " + variables.get(key));
 		  textArea.append("Var: " + key + " -> Valor: " + variables.get(key)+"\n");
 		}
+		Iterator<String> it2 = etiquetas.keySet().iterator();
+		
+		while(it2.hasNext()){
+		  String key = it2.next();
+		  System.out.println("Label: " + key + " -> Valor: " + etiquetas.get(key));
+		  textArea.append("Label: " + key + " -> Valor: " + etiquetas.get(key)+"\n");
+		}
+		
+	}
+	
+	private void generaDiagrama() {
+		diagramaDeFlujo = new DiagramaDeFlujo(parser.getSentencias(), parser.getEtiquetas());
+		//diagramaDeFlujo = new DiagramaDeFlujo();
+		diagramaDeFlujo.setVisible(true);
 	}
 }
