@@ -134,9 +134,22 @@ public class DiagramaDeFlujo extends JFrame {
 //		else if(sentencia instanceof SentenciaSiNo) {
 //			
 //		}
-//		if(sentencia instanceof SentenciaMientras) {
-//			
-//		}
+		
+		if(sentencia instanceof SentenciaMientras) {
+			sentenciasBloque.add(sentenciaActual);
+			List<Sentencia> _sentencias = new ArrayList<Sentencia>();
+			int n  = etiquetas.get("Fin" + (sentenciasBloque.size() - 1)) - 
+					etiquetas.get("Inicio" + (sentenciasBloque.size() - 1));
+			for(int i = 1; i <= n; i++) {
+				_sentencias.add(sentencias.get(sentenciaActual + i));
+			}
+			dibujaMientras(((ExpresionOperador)((SentenciaMientras) sentencia).expresion).izquierda.toString(),
+					((ExpresionOperador)((SentenciaMientras) sentencia).expresion).operador, 
+					((ExpresionOperador)((SentenciaMientras) sentencia).expresion).derecha.toString(), _sentencias);
+			
+			sentenciaActual += n;
+		}
+		
 //		if(sentencia instanceof SentenciaRepite) {
 //			
 //		}
@@ -236,8 +249,43 @@ public class DiagramaDeFlujo extends JFrame {
 		
 	}
 	
-	private void dibujaMientras() {
-		
+	private void dibujaMientras(String valor1, String simbolo, String valor2, List<Sentencia> _sentencias) {
+		int xD = mainX - (inicioW / 3) - 28;
+		int yD = mainY + (decisionH / 2) + 5;
+		int _yD = mainY;
+		g2.drawImage(decision, xD, mainY, null);
+		g2.drawString("Mientras", xD + 70, mainY + (escribirH / 2 - 18));
+		g2.drawString(valor1 + " " + simbolo + " " + valor2, xD + 50, mainY + (escribirH / 2 - 6));
+		mainY += decisionH;
+		for(Sentencia s : _sentencias) {
+			dibujaSentencia(s);
+		}
+		int nX = (xD + decisionW - 5 - mainX - inicioW / 2) / linea_horizontalW - 1;
+		int nY = _sentencias.size() * 100 / (linea_verticalH) + 1;
+		print("nx: " + nX );
+		for(int i = 0; i < nY; i++) {
+			g2.drawImage(linea_vertical, xD + decisionW - 5, linea_verticalH * i + yD, null);
+			g2.drawImage(linea_vertical, xD - linea_horizontalW * (nX ) + decisionW / 3, 
+					linea_verticalH * i + yD - 15, null);
+			if(i == nY - 1) {
+				g2.drawImage(linea_vertical, xD - linea_horizontalW * (nX) + decisionW / 3, 
+						_yD - 14, null);
+				g2.drawImage(linea_vertical, xD - linea_horizontalW * (nX) + decisionW / 3, 
+						_yD + 18, null);
+			}
+		}
+		for(int i = 1; i <= nX; i++) {
+			g2.drawImage(linea_horizontal, xD + decisionW - 5 - linea_horizontalW * i, linea_verticalH * nY + yD, null);
+			g2.drawImage(linea_horizontal, xD - linea_horizontalW * i + decisionW / 3, 
+					linea_verticalH * nY + yD - 15, null);
+			if(i != 1)
+				g2.drawImage(linea_horizontal, xD - linea_horizontalW * i + decisionW / 3, 
+					_yD - 14, null);
+		}
+		g2.drawImage(flecha_izquierda, (xD + decisionW - 5 - linea_horizontalW * (nX + 1)), 
+				linea_verticalH * nY + yD - 5, null);
+		g2.drawImage(flecha_derecha, xD + decisionW - 5 - linea_horizontalW * (nX + 3) - 4, 
+				_yD - 20, null);
 	}
 	
 	private void dibujaRepite() {
